@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     # zurb foundation
     'foundation',
     'crispy_forms_foundation',
+    'crispy_forms_foundation_demo',
 )
 
 MIDDLEWARE_CLASSES = (

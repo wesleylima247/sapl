@@ -19,6 +19,7 @@ from django.views.generic.base import TemplateView
 
 
 urlpatterns = [
+    url(r'^crispies/', include('crispy_forms_foundation_demo.urls')), #########################################################################
     url(r'^$', TemplateView.as_view(template_name='index.html')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^comissoes/', include('comissoes.urls')),
