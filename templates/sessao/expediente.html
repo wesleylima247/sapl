@@ -1,16 +1,20 @@
 {% extends "sessao/sessaoplenaria_detail.html" %}
 {% load i18n %}
+{% load crispy_forms_tags %} 
 
 {% block detail_content %}
-<form method="Post">
-  {% csrf_token %}
 
-  {% for title, fieldname in view.get_title_and_fieldnames %}
-    <h5>{{ title }}:</h5>
-  	<textarea name="{{ fieldname }}"></textarea>
-  {% endfor %}
+<form method="POST">
+  {% csrf_token %}
   
-  <br /><input type="submit" value="Salvar" />
+  {{view.formset.management_form}}
+
+  {% for form in view.formset.forms %}
+  		{{form}}
+  		<br>
+  {% endfor %}
+	
+	<br /><input type="submit" value="Salvar" />
 </form>
 
 {% endblock detail_content %}

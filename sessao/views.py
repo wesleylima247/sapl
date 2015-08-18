@@ -1,7 +1,10 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import ButtonHolder, Field, Fieldset, Layout, Submit
 from django import forms
+from django.forms import ModelForm
+from django.forms.models import modelformset_factory
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.edit import FormMixin
-
+from extra_views import FormSetView
 from parlamentares.models import Parlamentar
 from sapl.crud import build_crud
 
@@ -83,74 +86,39 @@ registro_votacao_crud = build_crud(
     ])
 
 
-def expediente_form_field(index):
-    return 'ExpedienteForm_%d' % index
+class ExpedienteForm(ModelForm):
+    # tipo = forms.CharField()
 
-
-class ExpedienteForm(forms.Form):
+    class Meta:
+        model = ExpedienteSessao
+        fields = ['tipo', 'conteudo']
 
     def __init__(self, *args, **kwargs):
         super(ExpedienteForm, self).__init__(*args, **kwargs)
-        for i, values in enumerate(TipoExpediente.objects.all()):
-            self.fields[expediente_form_field(i)] = forms.CharField(
-                widget=forms.Textarea, max_length=100, required=False)
+        # for i, values in enumerate(TipoExpediente.objects.all()):
+        #    self.fields['tipo'] = forms.CharField(required=False)
 
 
-class ExpedienteView(FormMixin, sessao_crud.CrudDetailView):
-    template_name = 'sessao/expediente.html'
+class ExpedienteView(FormSetView, sessao_crud.CrudDetailView):
     form_class = ExpedienteForm
+    template_name = 'sessao/expediente.html'
 
-    def post(self, request, *args, **kwargs):
+    data = {'form-TOTAL_FORMS': '6',
+            'form-INITIAL_FORMS': '0',
+            'form-MAX_NUM_FORMS': '', }
+
+    ExpedienteFormSet = modelformset_factory(ExpedienteSessao,
+                                             form=ExpedienteForm,
+                                             fields=('tipo', 'conteudo'))
+    formset = ExpedienteFormSet(data)
+
+    def formset_valid(self, formset):
         self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            for i, values in enumerate(TipoExpediente.objects.all()):
-                expediente = ExpedienteSessao()
-                expediente.sessao_plenaria = self.object
-                expediente.tipo = values
-                expediente.conteudo = form.data[expediente_form_field(i)]
-                expediente.save()
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+        expediente = ExpedienteSessao.objects.filter(
+            sessao_plenaria_id=self.object.id)
 
-    def get_success_url(self):
-        return self.detail_url
+        for form in formset.cleaned_data:
+            expediente.filter(tipo=form['tipo']).update(
+                conteudo=form['conteudo'])
 
-    def get_title_and_fieldnames(self):
-        for i, tipo in enumerate(TipoExpediente.objects.all()):
-            yield tipo.nome, expediente_form_field(i)
-
-
-class PresencaForm(forms.Form):
-    presenca = forms.BooleanField(required=False, initial=False)
-    parlamentar = forms.CharField(required=False, max_length=20)
-
-
-class PresencaView(FormMixin, sessao_crud.CrudDetailView):
-    template_name = 'sessao/presenca.html'
-    form_class = PresencaForm
-    paginate_by = 10
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            for parlamentar in Parlamentar.objects.all():
-                if parlamentar.ativo and form.data["presenca"] == "on":
-                    lista_presenca = SessaoPlenariaPresenca()
-                    lista_presenca.sessao_plen = self.object
-                    lista_presenca.parlamentar = parlamentar
-                    lista_presenca.save()
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def get_success_url(self):
-        return self.detail_url
-
-    def get_parlamentares(self):
-        self.object = self.get_object()
-        for parlamentar in Parlamentar.objects.all():
-            if parlamentar.ativo:
-                yield parlamentar
+        return super(ExpedienteView, self).formset_valid(formset)
