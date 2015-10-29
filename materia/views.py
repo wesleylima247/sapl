@@ -718,7 +718,6 @@ class DespachoInicialEditView(FormMixin, GenericView):
         pk = self.kwargs['pk']
         return reverse('despacho_inicial', kwargs={'pk': pk})
 
-
 def get_tipos_norma():
     return [('', 'Selecione')] \
         + [(t.id, t.sigla + ' - ' + t.descricao)
@@ -916,3 +915,19 @@ class LegislacaoCitadaEditView(FormMixin, GenericView):
             return self.render_to_response(
                 {'form': form,
                  'materia': materia})
+
+class MateriaAutoriaView(FormMixin, GenericView):
+      template_name = "materia/materia_autoria.html"
+
+      def get(self, request, *args, **kwargs):
+        materia = MateriaLegislativa.objects.get(id=kwargs['pk'])
+
+        autoria = Autoria.objects.filter(materia = materia)
+
+        tipo_autor = [('','Selecione')] + [(a.id, a.descricao) for a in TipoAutor.objects.all()]
+
+        return self.render_to_response(
+            {'materia': materia,
+             'autoria': autoria,
+             'tipo_autor': tipo_autor
+            })

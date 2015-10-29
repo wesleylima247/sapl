@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'crispy_forms_foundation',
     'sass_processor',
+    'smart_selects',
 )
 if DEBUG:
     INSTALLED_APPS += ('debug_toolbar',)

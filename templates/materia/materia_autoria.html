@@ -1,0 +1,65 @@
+{% extends "materia/materia_detail.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block detail_content %}
+	<fieldset>
+		<legend>Matéria Legislativa</legend>
+		<ul class="small-block-grid-3 medium-block-grid-3 large-block-grid-3">
+			<li>Tipo: <b>{{materia.tipo.sigla}}</b></li>
+			<li>Número: <b>{{materia.numero}}</b></li>
+			<li>Ano: <b>{{materia.ano}}</b></li>
+		</ul>
+		Ementa: <b>{{materia.ementa}}</b>
+
+		<fieldset>
+			<legend>Autoria</legend>
+			<table>
+				<tr>
+					<th>Nome Autor</th>
+					<th>Tipo Autor</th>
+					<th>Primeiro Autor?</th>
+				</tr>
+					{% for a in autoria %}
+						<tr>
+							<td><a href="">{{a.autor.nome}}</a></td>
+							<td>{{a.autor.tipo.descricao}}</td>
+							<td>{{a.primeiro_autor|yesno:"Sim,Não"}}</td>
+						</tr>
+					{% endfor %}
+			</table>
+		</fieldset>
+		<fieldset>
+			<legend>Autoria</legend>
+			<form method="POST"> 
+				{% csrf_token %}
+				Tipo de Autor:
+				<select id="tipo_autor" name="tipo_autor">
+					{% for idx, value in tipo_autor %}
+						<option value="{{idx}}">{{value}}</option>
+					{% endfor %}
+				</select>
+			</br>
+				Nome Autor:
+				<select id="nome_autor" name="nome_autor">
+				</select>
+			</br>
+				Primeiro Autor?
+				<input type="radio" name="primeiro_autor" value="sim" checked>Sim
+				<input type="radio" name="primeiro_autor" value="nao" checked>Não
+			</br>
+				<input type="submit" value="Salvar" id="salvar" name="salvar" class="primary button" />
+			</form>
+		</fieldset>
+	</fieldset>
+{% endblock %}
+
+{% block foot_js %}
+   <script type="text/javascript">
+    	$(function () {
+    		$('#tipo_autor').change(function() {
+    			alert('mudou');
+    		});
+		});
+	</script>
+{% endblock %}
