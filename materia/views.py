@@ -12,6 +12,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormMixin
 from vanilla import GenericView
 
+import json 
+from django.http import HttpResponse
+#from django.http import JsonResponse
+
 from comissoes.models import Comissao
 from norma.models import LegislacaoCitada, NormaJuridica, TipoNormaJuridica
 from sapl.crud import build_crud
@@ -920,14 +924,23 @@ class MateriaAutoriaView(FormMixin, GenericView):
       template_name = "materia/materia_autoria.html"
 
       def get(self, request, *args, **kwargs):
-        materia = MateriaLegislativa.objects.get(id=kwargs['pk'])
+          materia = MateriaLegislativa.objects.get(id=kwargs['pk'])
 
-        autoria = Autoria.objects.filter(materia = materia)
+          autoria = Autoria.objects.filter(materia = materia)
 
-        tipo_autor = [('','Selecione')] + [(a.id, a.descricao) for a in TipoAutor.objects.all()]
+          tipo_autor = [('','Selecione')] + [(a.id, a.descricao) for a in TipoAutor.objects.all()]
 
-        return self.render_to_response(
+          return self.render_to_response(
             {'materia': materia,
              'autoria': autoria,
              'tipo_autor': tipo_autor
             })
+
+      def post(self, request, *args, **kwargs):
+        print(kwargs)
+        return self.render_to_response({'pk': kwargs['pk']})
+
+
+def get_materia_autor(request, pk):
+  autores = [(a.id, a.nome) for a in Autor.objects.filter(tipo = pk)]
+  return HttpResponse(json.dumps(autores), content_type="application/json")

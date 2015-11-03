@@ -4,7 +4,7 @@ from materia.views import (DespachoInicialEditView, DespachoInicialView,
                            FormularioCadastroView, FormularioSimplificadoView,
                            LegislacaoCitadaEditView, LegislacaoCitadaView,
                            MateriaAnexadaEditView, MateriaAnexadaView,
-                           MateriaAutoriaView,
+                           MateriaAutoriaView, get_materia_autor,
                            autor_crud, materia_legislativa_crud, orgao_crud,
                            origem_crud, regime_tramitacao_crud,
                            status_tramitacao_crud, tipo_autor_crud,
@@ -51,4 +51,6 @@ urlpatterns = [
         LegislacaoCitadaView.as_view(), name='legislacao_citada'),
     url(r'^materia/(?P<pk>\d+)/legislacao-citada/(?P<id>\d+)/edit',
         LegislacaoCitadaEditView.as_view(), name='legislacao_citada_edit'),
+
+    url(r'^materia/autor/(?P<pk>\d+)$', get_materia_autor, name='materia_autor'),
 ]
