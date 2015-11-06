@@ -3,6 +3,7 @@ from django.conf.urls import include, url
 from protocoloadm.views import (AnularProtocoloAdmView,
                                 DetailDocumentoAdministrativo,
                                 DocumentoAcessorioAdministrativoView,
+                                get_autor,
                                 PesquisarDocumentoAdministrativo,
                                 ProposicaoReceberView, ProposicaoView,
                                 ProposicoesIncorporadasView,
@@ -34,6 +35,9 @@ urlpatterns = [
         include(protocolo_documento_crud.urls)),
     url(r'^protocoloadm/protocolo-mat/',
         include(protocolo_materia_crud.urls), name='protocolomat'),
+
+    url(r'^protocoloadm/get_autor$',
+        get_autor, name='get_autor'),
     url(r'^protocoloadm/protocolo$',
         ProtocoloPesquisaView.as_view(), name='protocolo'),
     # url(r'^protocoloadm/anular-protocolo/',
@@ -60,8 +64,7 @@ urlpatterns = [
     url(r'^protocoloadm/(?P<pk>\d+)/tramitacao_edit',
         TramitacaoAdmEditView.as_view(), name='tramitacao_edit'),
     url(r'^protocoloadm/(?P<pk>\d+)/tramitacao_delete/(?P<oid>\d+)',
-        TramitacaoAdmDeleteView.as_view(), name='tramitacao_delete'),
-
+        TramitacaoAdmDeleteView.as_view(), name='tramitacao_delete'),    
 
     # TODO: move to Proposicoes app
     url(r'^protocoloadm/proposicao-receber',

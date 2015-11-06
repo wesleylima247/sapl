@@ -172,6 +172,15 @@ class ProtocoloForm(forms.Form):
     autor = forms.CharField(label='Autor', required=False)
     assunto = forms.CharField(label='Assunto', required=False)
 
+def get_autor(request):
+  from django.http import JsonResponse
+
+  autores = [(a.id, a.nome) for a in Autor.objects.all()];
+
+  print(autores)
+
+  return JsonResponse(autores)
+
 class ProtocoloListView(FormMixin, ListView):
     template_name = 'protocoloadm/protocolo_list.html'
     context_object_name = 'protocolos'
