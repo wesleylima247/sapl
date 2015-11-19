@@ -9,6 +9,7 @@
 			<legend>Pesquisa Avançada</legend>
 				{% crispy form %}
 				<input type="submit" value="Pesquisar" name="pesquisa" class="button primary"/>
+				<input type="hidden" id="autor" name="autor" />
 			</fieldset>
 		</form>	
 
@@ -18,45 +19,50 @@
 		  <form>
     		<fieldset>
       			<label for="name">Autor</label>
-      			<input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all">
+      			<input type="text" name="nome-autor" id="nome-autor" class="text ui-widget-content ui-corner-all">
       			<button id="pesquisar-autor">Pesquisar</button>
-      			<select id="resultados-autor" style="height:30px;">
-
+      			<select id="resultados-autor" style="height:40px;">
       			</select>
+      			<button id="selecionar">Selecionar</button>
     			</fieldset>
   			</form>
 		</div>
-{% endblock detail_content %}
-
-{% block foot_js %}
    <script type="text/javascript">
     	$(function () {
-			$('.dateinput').fdatepicker({
-				// TODO localize
-				format: 'dd/mm/yyyy',
-				language: 'pt',
-				endDate: '31/12/2100',
-				todayBtn: true
-			});
 
 			var dialog = $("#autor-dialog-form").dialog({
       			autoOpen: false,
-      			height: 400,
-      			width: 450,
+      			height: 500,
+      			width: 550,
       			modal: true,}
       		);
 
       		$("#pesquisar-autor").click(function() {
+
+      			$('#resultados-autor option').remove()
+
       			$.get("get_autor", {autor: $("#name").val()} )
       			 .done(function( data ) {
-      			 	console.debug(data.id);
+					$.each(data, function (item, value) {
+    					$('#resultados-autor').append($('<option>', { 
+        					value: value[0],
+        					text : value[1]
+    					}));
+					});
       			 });
       			return false;
+      		});
+
+      		$("#selecionar").click(function() {
+      			$("#nome-autor").val("aaaaa");
+      			$("#autor").val($('#resultados-autor').val());      			
+      			dialog.dialog("close");
+      			return false; // nao submeter pagina ??? 
       		});	
 
 			$("#modal").click(function() {
 				dialog.dialog("open");
 			});
 		});
-	</script>
-{% endblock %}
+	</script>		
+{% endblock detail_content %}

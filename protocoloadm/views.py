@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Max
 from django.forms import ModelForm
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -25,6 +25,8 @@ from .models import (Autor, DocumentoAcessorioAdministrativo,
                      DocumentoAdministrativo, Protocolo,
                      StatusTramitacaoAdministrativo,
                      TipoDocumentoAdministrativo, TramitacaoAdministrativo)
+
+from parlamentares.models import Parlamentar
 
 tipo_documento_administrativo_crud = build_crud(
     TipoDocumentoAdministrativo, '', [
@@ -173,13 +175,13 @@ class ProtocoloForm(forms.Form):
     assunto = forms.CharField(label='Assunto', required=False)
 
 def get_autor(request):
+  import json
+  from django.http import HttpResponse
   from django.http import JsonResponse
 
-  autores = [(a.id, a.nome) for a in Autor.objects.all()];
+  autores = [(a.id, a.nome_parlamentar) for a in Parlamentar.objects.filter(ativo=True)];
 
-  print(autores)
-
-  return JsonResponse(autores)
+  return HttpResponse(json.dumps(autores), content_type="application/json")
 
 class ProtocoloListView(FormMixin, ListView):
     template_name = 'protocoloadm/protocolo_list.html'
@@ -256,7 +258,7 @@ class ProtocoloPesquisaView(FormMixin, GenericView):
                 kwargs['assunto'] = request.POST['assunto']
 
             request.session['kwargs'] = kwargs
-            from django.shortcuts import redirect
+
             return redirect('protocolo_list')
         else:
             return self.form_invalid(form)
