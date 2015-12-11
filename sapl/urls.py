@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'', include('painel.urls')),
     url(r'', include('protocoloadm.urls')),
     url(r'', include('compilacao.urls')),
+    url(r'^search/', include('haystack.urls')),
 
     # must come at the end
     #   so that base /sistema/ url doesn't capture its children
