@@ -44,6 +44,11 @@ nosetests.xml
 coverage.xml
 *,cover
 
+# Acceptance Test
+/output.xml
+/log.html
+/report.html
+
 # Translations
 *.mo
 *.pot

@@ -7,3 +7,8 @@ pytest
 pytest-cov
 pytest-django
 WebTest
+robotframework-python3==2.8.6
+decorator
+docutils
+selenium
+https://github.com/vincentfretin/robotframework-selenium2library/archive/master.zip
