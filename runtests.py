@@ -3,7 +3,8 @@ import os
 import sys
 import signal
 from tempfile import TemporaryFile
-from subprocess import Popen, call, STDOUT
+from subprocess import Popen, STDOUT
+from robot import run_cli
 
 try:
     import Selenium2Library  # noqa
@@ -27,7 +28,7 @@ def stop_application(process):
 
 def run_test(args):
     process = start_application()
-    call(['pybot'] + args, shell=(os.sep == '\\'))
+    run_cli(args)
     stop_application(process)
 
 
