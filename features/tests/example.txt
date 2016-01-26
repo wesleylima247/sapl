@@ -1,10 +1,9 @@
 *** Settings ***
 
 Documentation   This an example test.
-Suite Setup     Open Browser To Home Page
-Suite Teardown  Close Browser
+Suite Setup     Start the webserver
+Suite Teardown  Stop the webserver
 Resource        ../resources/resources.txt
-
 
 *** Test Cases ***
 
@@ -13,5 +12,4 @@ Scenario: Fill id_nome and check if the page contains a text
 	When I go to Adicionar Comissoes
 	And I fill id_nome with a name
 	And I click the submit button
-	Sleep  1
 	Then I should see  Este campo é obrigatório.

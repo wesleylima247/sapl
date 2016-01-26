@@ -3,8 +3,7 @@ import os
 import sys
 import signal
 from tempfile import TemporaryFile
-from subprocess import Popen, STDOUT
-from robot import run_cli
+from subprocess import Popen, STDOUT, call
 
 try:
     import Selenium2Library  # noqa
@@ -18,8 +17,9 @@ MANAGE = os.path.join(ROOT, 'manage.py')
 
 
 def start_application():
-    return Popen(['python', MANAGE, 'runserver'],
-                 stdout=TemporaryFile(), stderr=STDOUT, preexec_fn=os.setsid)
+    return Popen(['python', MANAGE, 'runserver',
+                 '--settings=sapl.robot_settings'], stdout=TemporaryFile(),
+                 stderr=STDOUT, preexec_fn=os.setsid)
 
 
 def stop_application(process):
@@ -27,9 +27,9 @@ def stop_application(process):
 
 
 def run_test(args):
-    process = start_application()
-    run_cli(args)
-    stop_application(process)
+    server_process = start_application()
+    call(['pybot'] + args, shell=(os.sep == '\\'))
+    stop_application(server_process)
 
 
 def print_help():

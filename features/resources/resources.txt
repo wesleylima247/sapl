@@ -1,28 +1,34 @@
 *** Settings ***
 
-Documentation  A simple exemple test that open a page and 
-...			   fill an input text box. This is the resource file
-...			   wich contains the keywords and variables used in the tests.
-Library        Selenium2Library
+Documentation   A simple exemple test that open a page and 
+...			    fill an input text box. This is the resource file
+...			    wich contains the keywords and variables used in the tests.
+Library         Selenium2Library
+
 
 *** Variables ***
 
 ${SERVER}        				localhost:8000
 ${BROWSER}       				firefox
 ${DELAY}         				0
-
 ${HOME URL}      				http://${SERVER}/
 ${ADICIONAR COMISSOES URL}		http://${SERVER}/comissoes/create
 
-${name}							Luciano			
+${name}							Luciano
+${django process}
+
 
 *** Keywords ***
 
-Open Browser To Home Page
-    Open Browser  ${HOME URL}  ${BROWSER}
+Start the webserver
+	Set suite variable  ${django process}
+	Open Browser  ${HOME URL}  ${BROWSER}
     Maximize Browser Window
     Set Selenium Speed  ${DELAY}
     Title Should Be  SAPL - Sistema de Apoio ao Processo Legislativo
+
+Stop the webserver
+	Close Browser
 
 I have basics data to add a comissao
 	[return]	${name}
