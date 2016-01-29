@@ -17,7 +17,6 @@ ${ADICIONAR COMISSOES URL}		http://${SERVER}/comissoes/create
 ${name}							Luciano
 ${django process}
 
-
 *** Keywords ***
 
 Start the webserver
@@ -36,12 +35,17 @@ I have basics data to add a comissao
 I go to Adicionar Comissoes
 	Go To  ${ADICIONAR COMISSOES URL}
 
-I fill id_nome with a name
-	Input Text  id=id_nome  ${name}
+I fill ${field name} with ${info}
+    Input Text  ${field name}  ${info}
 
-I click the submit button
-	Click Button  name=submit
+I click the ${submit} button
+	Click Button  name=${submit}
 
-I should see
-	[Arguments]		${text}
+I should see ${text}
 	Page Should Contain  ${text}
+
+I am in ${page name} page
+    Go To  ${${page name} URL}
+
+I select value ${value} in ${field name} list
+    Select From List by Index  ${field name}  ${value}
