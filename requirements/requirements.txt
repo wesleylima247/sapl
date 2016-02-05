@@ -1,3 +1,4 @@
+crispy-forms-foundation
 Django<1.9
 djangorestframework
 django-admin-bootstrapped
