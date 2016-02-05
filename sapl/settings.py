@@ -107,10 +107,9 @@ WSGI_APPLICATION = 'sapl.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sapl',
-        'USER': 'sapl',
-        'PASSWORD': 'sapl',
-        'HOST': 'localhost',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
@@ -164,13 +163,14 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 BOWER_COMPONENTS_ROOT = BASE_DIR.child("bower")
 BOWER_INSTALLED_APPS = (
-    'bootstrap-sass',
-    'components-font-awesome',
-    'tinymce',
-    'jquery-ui',
-    'jquery-runner',
-    'jQuery-Mask-Plugin',
-    'jsdiff',
+    'jquery#1.11.3',
+    'bootstrap-sass#3.3.6',
+    'components-font-awesome#4.5.0',
+    'jquery-ui#1.11.4',
+    'tinymce#4.3.3',
+    'jquery-runner#2.3.3',
+    'jQuery-Mask-Plugin#1.13.4',
+    'jsdiff#2.2.1',
     'https://github.com/hoarrd/drunken-parrot-flat-ui.git',
 )
 
