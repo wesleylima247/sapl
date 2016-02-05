@@ -12,3 +12,4 @@ decorator
 docutils
 selenium
 https://github.com/vincentfretin/robotframework-selenium2library/archive/master.zip
+packages/robotframework_modelmommystubs/dist/robotframework-modelmommystubs-0.1.tar.gz
