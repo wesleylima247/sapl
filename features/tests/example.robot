@@ -1,27 +1,25 @@
 *** Settings ***
 
-Documentation   This an example test.
-Suite Setup     Start the webserver
-Suite Teardown  Stop the webserver
+Documentation   Este é um exemplo de teste.
+Suite Setup     Começar webserver
+Suite Teardown  Parar webserver
 Resource        ../resources/resources.robot
 
 *** Test Cases ***
 
-Scenario: Fill id_nome and check if the page contains a text
-    Given I am in ADICIONAR COMISSOES page
-    When I fill id_nome with Nome da Comissão
-    And I click the submit button
-    Then I should see Este campo é obrigatório.
+Scenario: Preencher id_nome verificar se aparece mensagem de erro
+    Dado que eu estou na página ADICIONAR COMISSOES
+    Quando eu preencho o campo id_nome com Nome da Comissão
+    E eu clico no botão submit
+    Então eu devo ver Este campo é obrigatório.
 
-# This test scenario is incomplete.
-Scenario: Create a comissão
-    Given I have the stubs to comissoes app
-    And I am in ADICIONAR COMISSOES page
-    When I fill id_nome with Nome da Comissão
-    And I fill id_sigla with NdC
-    # And I select value 1 in id_tipo list
-    And I fill id_data_criacao with 01/01/2016
-    And I select value 1 in id_unidade_deliberativa list
-    And I fill id_data_extincao with 01/01/2016
-    And I click the submit button
-    Then I should see Este campo é obrigatório.
+Scenario: Criar uma comissão valida
+    Dado que eu estou na página ADICIONAR COMISSOES
+    Quando eu preencho o campo id_nome com Nome da Comissão
+    E eu preencho o campo id_sigla com NdC
+    E eu seleciono Tipo da comissão na lista id_tipo
+    E eu preencho o campo id_data_criacao com 01/01/2016
+    E eu seleciono Sim na lista id_unidade_deliberativa
+    E eu preencho o campo id_data_extincao com 02/01/2016
+    E eu clico no botão submit
+    Então eu devo ver Registro criado com sucesso!
