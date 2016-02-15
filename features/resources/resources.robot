@@ -10,6 +10,7 @@ ${SERVER}                       localhost:8081
 ${BROWSER}                      firefox
 ${DELAY}                        0
 ${HOME URL}                     http://${SERVER}/
+${COMISSOES URL}                http://${SERVER}/comissoes/
 ${ADICIONAR COMISSOES URL}      http://${SERVER}/comissoes/create
 ${name}                         Nome da Comissão
 @{model list}
@@ -36,17 +37,26 @@ Começar webserver
 Parar webserver
     Close Browser
 
-eu estou na página ${nome da página}
+estou na página ${nome da página}
     Go To  ${${nome da página} URL}
 
-eu preencho o campo ${nome do campo} com ${informação}
+preencho o campo ${nome do campo} com ${informação}
     Input Text  ${nome do campo}  ${informação}
 
-eu seleciono ${info} na lista ${lista}
+seleciono ${info} na lista ${lista}
     Select From List  ${lista}  ${info}
 
-eu clico no botão ${nome do botão}
+clico no botão ${nome do botão}
     Click Button  name=${nome do botão}
 
-eu devo ver ${texto}
+clico no link ${nome do link}
+    Click Link  ${nome do link}
+
+clico no elemento ${nome do elemento}
+    Click Element  ${nome do elemento}
+
+devo ver ${texto}
     Page Should Contain  ${texto}
+
+não devo ver ${texto}
+    Page Should Not Contain  ${texto}
