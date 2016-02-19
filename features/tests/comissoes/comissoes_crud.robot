@@ -1,17 +1,18 @@
 *** Settings ***
 
-Documentation   Caso de teste para CRUD do app comissoes
+Documentation   Casos de teste para CRUD do app comissoes.
 Suite Setup     Começar webserver
 Suite Teardown  Parar webserver
-Resource        ../resources/resources.robot
+Resource        ../../resources/resources.robot
 
 *** Test Cases ***
 
 Scenario: Verificar campos obrigatórios
     Dado que estou na página ADICIONAR COMISSOES
-    Quando preencho o campo id_nome com Nome da Comissão
+    Quando seleciono Sim na lista id_unidade_deliberativa
     E clico no botão submit
-    Então devo ver Este campo é obrigatório.
+    Então devo ver o texto Este campo é obrigatório.
+    E não devo ver o texto Registro criado com sucesso!
 
 Scenario: Criar uma comissão (somente campos obrigatórios)
     Dado que estou na página ADICIONAR COMISSOES
@@ -21,12 +22,12 @@ Scenario: Criar uma comissão (somente campos obrigatórios)
     E preencho o campo id_data_criacao com 01/01/2016
     E seleciono Sim na lista id_unidade_deliberativa
     E clico no botão submit
-    Então devo ver Registro criado com sucesso!
-    E devo ver Teste de Criação 1
-    E devo ver TdC1
-    E devo ver Tipo da Comissão
-    E devo ver 01/01/2016
-    E devo ver Sim
+    Então devo ver o texto Registro criado com sucesso!
+    E devo ver o texto Teste de Criação 1
+    E devo ver o texto TdC1
+    E devo ver o texto Tipo da Comissão
+    E devo ver o texto 01/01/2016
+    E devo ver o texto Sim
 
 Scenario: Criar uma comissão (todos os campos)
     Dado que estou na página ADICIONAR COMISSOES
@@ -50,44 +51,45 @@ Scenario: Criar uma comissão (todos os campos)
     E preencho o campo id_data_prorrogada_temp com 06/01/2016
     E preencho o campo id_data_fim_comissao com 07/01/2016
     E clico no botão submit
-
-    Então devo ver Registro criado com sucesso!
-    E devo ver Teste de Criação 2
-    E devo ver TdC2
-    E devo ver Tipo da Comissão
-    E devo ver 02/01/2016
-    E devo ver Não
-    E devo ver 03/01/2016
-    E devo ver Sala 1
-    E devo ver 12h
-    E devo ver 1111-1111
-    E devo ver Rua A
-    E devo ver 2222-2222
-    E devo ver 3333-3333
-    E devo ver Nome do Secretário
-    E devo ver secretario@email.com
-    E devo ver Apelido da Comissão
-    E devo ver 04/01/2016
-    E devo ver 05/01/2016
-    E devo ver 06/01/2016
-    E devo ver 07/01/2016
+    Então devo ver o texto Registro criado com sucesso!
+    E devo ver o texto Teste de Criação 2
+    E devo ver o texto TdC2
+    E devo ver o texto Tipo da Comissão
+    E devo ver o texto 02/01/2016
+    E devo ver o texto Não
+    E devo ver o texto 03/01/2016
+    E devo ver o texto Sala 1
+    E devo ver o texto 12h
+    E devo ver o texto 1111-1111
+    E devo ver o texto Rua A
+    E devo ver o texto 2222-2222
+    E devo ver o texto 3333-3333
+    E devo ver o texto Nome do Secretário
+    E devo ver o texto secretario@email.com
+    E devo ver o texto Apelido da Comissão
+    E devo ver o texto 04/01/2016
+    E devo ver o texto 05/01/2016
+    E devo ver o texto 06/01/2016
+    E devo ver o texto 07/01/2016
 
 Scenario: Excluir uma comissão
     Dado que estou na página COMISSOES
-    Quando clico no link Teste de Exclusão
+    Quando clico no link Teste de Exclusão CRUD
     E clico no link Excluir
+    E espero 0.25 segundos
     E clico no botão submit
-    Então devo ver Registro excluído com sucesso!
+    Então devo ver o texto Registro excluído com sucesso!
     Dado que estou na página COMISSOES
-    Então não devo ver Teste de Exclusão
+    Então não devo ver o texto Teste de Exclusão CRUD
 
 Scenario: Editar uma Comissão
     Dado que estou na página COMISSOES
-    Quando clico no link Teste de Edição
+    Quando clico no link Teste de Edição CRUD
     E clico no link Editar
+    E espero 0.25 segundos
     E preencho o campo id_nome com Editado!
     E clico no botão submit
-    Então devo ver Registro alterado com sucesso!
+    Então devo ver o texto Registro alterado com sucesso!
     Dado que estou na página COMISSOES
-    Então devo ver Editado!
-    E não devo ver Teste de Edição
+    Então devo ver o texto Editado!
+    E não devo ver o texto Teste de Edição CRUD

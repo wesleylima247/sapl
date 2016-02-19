@@ -37,26 +37,41 @@ Começar webserver
 Parar webserver
     Close Browser
 
-estou na página ${nome da página}
-    Go To  ${${nome da página} URL}
+# Obs.: a keyword 'espero x segundo(s)' é preciso ser usada em alguns casos
+#       para evitar erros. O erro ocorre quando o robot framework tenta
+#       encontrar um elemento antes da página ser carregada.
+espero 1 segundo
+    Sleep  1
 
-preencho o campo ${nome do campo} com ${informação}
-    Input Text  ${nome do campo}  ${informação}
+espero ${segundos} segundos
+    Sleep  ${segundos}
+
+estou na página ${página}
+    Go To  ${${página} URL}
+
+preencho o campo ${campo} com ${informação}
+    Input Text  ${campo}  ${informação}
 
 seleciono ${info} na lista ${lista}
     Select From List  ${lista}  ${info}
 
-clico no botão ${nome do botão}
-    Click Button  name=${nome do botão}
+clico no botão ${botão}
+    Click Button  name=${botão}
 
-clico no link ${nome do link}
-    Click Link  ${nome do link}
+clico no link ${link}
+    Click Link  ${link}
 
-clico no elemento ${nome do elemento}
-    Click Element  ${nome do elemento}
+clico no elemento ${elemento}
+    Click Element  ${elemento}
 
-devo ver ${texto}
+devo ver o texto ${texto}
     Page Should Contain  ${texto}
 
-não devo ver ${texto}
+não devo ver o texto ${texto}
     Page Should Not Contain  ${texto}
+
+devo ver o link ${link}
+    Page Should Contain Link  ${link}
+
+seleciono o checkbox ${checkbox}
+    Select Checkbox  ${checkbox}

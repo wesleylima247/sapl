@@ -5,7 +5,7 @@ from robot.run import RobotFramework
 # from django.core import management
 from model_mommy.recipe import Recipe, foreign_key
 
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath('../..'))
 
 pytestmark = pytest.mark.django_db
 
@@ -31,4 +31,4 @@ def test_robot(live_server):
     comissao.make(nome='Teste de Edição')
 
     # Roda os testes
-    RobotFramework().main(['features'])
+    RobotFramework().main(['features/tests/comissoes/comissoes_crud.robot'])
