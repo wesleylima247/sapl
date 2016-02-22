@@ -1,9 +1,10 @@
-import sapl
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
+
+import sapl
 from materia.models import TipoMateriaLegislativa
 from sapl.layout import form_actions
 

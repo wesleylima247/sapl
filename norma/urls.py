@@ -1,4 +1,5 @@
 from django.conf.urls import include, url
+
 from norma.views import (NormaIncluirView, NormaTaView, assunto_norma_crud,
                          norma_temporario_crud, tipo_norma_crud)
 
