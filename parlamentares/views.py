@@ -9,6 +9,7 @@ from django.views.generic.edit import FormMixin
 from vanilla import GenericView
 from django.forms.fields import ImageField
 from io import BytesIO
+from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 from crud import build_crud
@@ -276,6 +277,15 @@ class ParlamentaresCadastroView(FormMixin, GenericView):
 
         if form.is_valid():
             parlamentar = form.save(commit=False)
+            if 'email' in request.POST:
+                try:
+                    validate_email(request.POST['email'])
+                except ValidationError:
+                    mensagem = "Por favor, insira um e-mail válido"
+                    messages.add_message(request, messages.INFO, mensagem)
+                    return self.render_to_response({'form': form})
+                else:
+                    pass
             if 'fotografia' in request.FILES:
                 parlamentar.fotografia = request.FILES['fotografia']
                 valida_imagem = ValidaImageField()
@@ -325,6 +335,15 @@ class ParlamentaresEditarView(FormMixin, GenericView):
         if form.is_valid():
             if 'salvar' in request.POST:
                 parlamentar = form.save(commit=False)
+                if 'email' in request.POST:
+                    try:
+                        validate_email(request.POST['email'])
+                    except ValidationError:
+                        mensagem = "Por favor, insira um e-mail válido"
+                        messages.add_message(request, messages.INFO, mensagem)
+                        return self.render_to_response({'form': form})
+                    else:
+                        pass
                 if 'fotografia' in request.FILES:
                     parlamentar.fotografia = request.FILES['fotografia']
                     valida_imagem = ValidaImageField()
