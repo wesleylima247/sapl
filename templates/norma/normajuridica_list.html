@@ -1,11 +1,23 @@
 {% extends "crud/list.html" %}
 {% load i18n %}
 {% load crispy_forms_tags %}
-{% block add_button %}
-
+{% block base_content %}
 	<div class="actions btn-group pull-right" role="group">
 	  <a href="{% url 'norma_incluir' %}" class="btn btn-default">
 	    {% blocktrans with verbose_name=view.verbose_name %} Adicionar {{ verbose_name }} {% endblocktrans %}
 	  </a>
 	</div>
+
+	{% if not rows %}
+  		<p>{{ NO_ENTRIES_MSG }}</p>
+	{% else %}
+		<p>{{ object_list|length }} Norma(s) listada(s)</p>
+		{% for obj in object_list %}
+			<b><a href="{% url 'normajuridica:detail' obj.pk %}">{{ obj.tipo }} {{ obj.numero}}/{{obj.ano}} - {{ obj.data }}</a></b>
+			<br />
+			{{ obj.ementa|safe }}
+			<br /><br />
+		{% endfor %}
+		{% include "paginacao.html" %}
+	{% endif %}
 {% endblock %}
