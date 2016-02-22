@@ -19,6 +19,9 @@ from norma.models import LegislacaoCitada, NormaJuridica, TipoNormaJuridica
 from parlamentares.models import Partido
 from sessao.models import AcompanharMateria
 
+from sapl.utils import DocField, UploadedFileInMemoryError
+from django.core.exceptions import ValidationError
+
 from .forms import (AutoriaForm, DespachoInicialForm, DocumentoAcessorioForm,
                     FormularioCadastroForm, FormularioSimplificadoForm,
                     LegislacaoCitadaForm, MateriaAnexadaForm,
@@ -1452,7 +1455,16 @@ class ProposicaoView(FormMixin, GenericView):
         if form.is_valid():
             proposicao = form.save(commit=False)
             if 'texto_original' in request.FILES:
-                proposicao.texto_original = request.FILES['texto_original']
+                df = DocField()
+                try:
+                    df.clean(request.FILES['texto_original'])
+                except ValidationError:
+                    mensagem = "Envie um documento válido. O documento está corrompido\
+                                ou não é do formato especificado."
+                    messages.add_message(request, messages.INFO, mensagem)
+                    return self.render_to_response({'form': form})
+                else:
+                    proposicao.texto_original = request.FILES['texto_original']
 
             tipo = TipoProposicao.objects.get(
                 id=int(request.POST['tipo']))
