@@ -1,5 +1,4 @@
 from django.conf.urls import include, url
-
 from norma.views import (NormaIncluirView, NormaTaView, assunto_norma_crud,
                          norma_temporario_crud, tipo_norma_crud)
 
@@ -17,5 +16,5 @@ urlpatterns = [
     url(r'^sistema/norma/tipo/', include(tipo_norma_crud.urls)),
     url(r'^sistema/norma/assunto/', include(assunto_norma_crud.urls)),
 
-    url(r'^norma/incluir', NormaIncluirView.as_view(), name='norma-incluir'),
+    url(r'^norma/incluir', NormaIncluirView.as_view(), name='norma_incluir'),
 ]

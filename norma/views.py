@@ -1,19 +1,16 @@
-from datetime import datetime
-from re import sub
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic.edit import FormMixin
-from vanilla.views import GenericView
-
+from datetime import datetime
+from django.http import HttpResponseRedirect
 from compilacao.views import IntegracaoTaView
 from crud import build_crud
-from materia.models import MateriaLegislativa, TipoMateriaLegislativa
-
-from .forms import NormaJuridicaForm
+from django.views.generic import CreateView
 from .models import (AssuntoNorma, LegislacaoCitada, NormaJuridica,
                      TipoNormaJuridica)
+from .forms import NormaJuridicaForm
+from django.core.urlresolvers import reverse
+from materia.models import MateriaLegislativa
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 
 assunto_norma_crud = build_crud(
     AssuntoNorma, 'assunto_norma_juridica', [
@@ -31,32 +28,41 @@ tipo_norma_crud = build_crud(
             ('equivalente_lexml', 4)]],
     ])
 
-norma_crud = build_crud(
+# norma_crud = build_crud(
 
-    NormaJuridica, '', [
+#     NormaJuridica, '', [
 
-        [_('Identificação Básica'),
-         [('tipo', 4), ('numero', 4), ('ano', 4)],
-            [('data', 4), ('esfera_federacao', 4), ('complemento', 4)],
-            [('tip_id_basica_FIXME', 4),
-             ('num_ident_basica_FIXME', 4),
-             ('ano_ident_basica_FIXME', 4)],
-            [('data_publicacao', 3),
-             ('veiculo_publicacao', 3),
-             ('pagina_inicio_publicacao', 3),
-             ('pagina_fim_publicacao', 3)],
-            [('file_FIXME', 6), ('tip_situacao_norma_FIXME', 6)],
-            [('ementa', 12)],
-            [('indexacao', 12)],
-            [('observacao', 12)]],
-    ])
+#         [_('Identificação Básica'),
+#          [('tipo', 4), ('numero', 4), ('ano', 4)],
+#             [('data', 4), ('esfera_federacao', 4), ('complemento', 4)],
+#             [('materi', 4),
+#              ('numero', 4),
+#              ('ano', 4)],
+#             [('data_publicacao', 3),
+#              ('veiculo_publicacao', 3),
+#              ('pagina_inicio_publicacao', 3),
+#              ('pagina_fim_publicacao', 3)],
+#             [('texto_integral', 12)],
+#             [('ementa', 12)],
+#             [('indexacao', 12)],
+#             [('observacao', 12)]],
+#     ])
 
 norma_temporario_crud = build_crud(
     NormaJuridica, 'normajuridica', [
 
         [_('Identificação Básica'),
-         [('tipo', 5), ('numero', 2), ('ano', 2), ('data', 3)],
-            [('ementa', 12)]],
+         [('tipo', 4), ('numero', 4), ('ano', 4)],
+            [('data', 4), ('esfera_federacao', 4), ('complemento', 4)],
+            [('materia', 12)],
+            [('data_publicacao', 3),
+             ('veiculo_publicacao', 3),
+             ('pagina_inicio_publicacao', 3),
+             ('pagina_fim_publicacao', 3)],
+            [('texto_integral', 12)],
+            [('ementa', 12)],
+            [('indexacao', 12)],
+            [('observacao', 12)]],
     ])
 
 
@@ -73,54 +79,85 @@ legislacao_citada_crud = build_crud(
     ])
 
 
-class NormaIncluirView(FormMixin, GenericView):
+# class NormaIncluirView(FormMixin, GenericView):
+#     template_name = "norma/normajuridica_incluir.html"
+
+#     def get_success_url(self):
+#         return '/norma/'
+
+#     def get(self, request, *args, **kwargs):
+#         form = NormaJuridicaForm()
+#         return self.render_to_response({'form': form})
+
+#     def post(self, request, *args, **kwargs):
+#         form = NormaJuridicaForm(request.POST or None)
+#         if form.is_valid():
+#             norma = form.save(commit=False)
+
+#             if form.cleaned_data['tipo_materia']:
+#                 tipo = TipoMateriaLegislativa.objects.get(
+#                     id=form.cleaned_data['tipo_materia'])
+#                 try:
+#                     materia = MateriaLegislativa.objects.get(
+#                         tipo=tipo,
+#                         numero=form.cleaned_data['numero'],
+#                         ano=form.cleaned_data['ano'])
+#                 except ObjectDoesNotExist:
+#                     return self.render_to_response(
+#                         {'form': form,
+#                          'error': 'Matéria adicionada não existe!'})
+#                 else:
+#                     norma.materia = materia
+
+#             if form.cleaned_data['indexacao']:
+#                 norma.indexacao = sub(
+#                     '&nbsp;', ' ', strip_tags(form.cleaned_data['indexacao']))
+
+#             if form.cleaned_data['observacao']:
+#                 norma.observacao = sub(
+#                     '&nbsp;', ' ', strip_tags(form.cleaned_data['observacao']))
+
+#             if 'texto_integral' in request.FILES:
+#                 norma.texto_integral = request.FILES['texto_integral']
+
+#             norma.ementa = sub(
+#                 '&nbsp;', ' ', strip_tags(form.cleaned_data['ementa']))
+#             norma.timestamp = datetime.now()
+#             norma.save()
+#             return self.form_valid(form)
+#         else:
+#             return self.form_invalid(form)
+
+class NormaIncluirView(CreateView):
     template_name = "norma/normajuridica_incluir.html"
+    form_class = NormaJuridicaForm
 
     def get_success_url(self):
-        return '/norma/'
-
-    def get(self, request, *args, **kwargs):
-        form = NormaJuridicaForm()
-        return self.render_to_response({'form': form})
+        return reverse('normajuridica:list')
 
     def post(self, request, *args, **kwargs):
-        form = NormaJuridicaForm(request.POST or None)
+        form = self.get_form()
+
         if form.is_valid():
             norma = form.save(commit=False)
 
             if form.cleaned_data['tipo_materia']:
-                tipo = TipoMateriaLegislativa.objects.get(
-                    id=form.cleaned_data['tipo_materia'])
                 try:
                     materia = MateriaLegislativa.objects.get(
-                        tipo=tipo,
-                        numero=form.cleaned_data['numero'],
-                        ano=form.cleaned_data['ano'])
+                        tipo_id=form.cleaned_data['tipo_materia'],
+                        numero=form.cleaned_data['numero_materia'],
+                        ano=form.cleaned_data['ano_materia'])
                 except ObjectDoesNotExist:
-                    return self.render_to_response(
-                        {'form': form,
-                         'error': 'Matéria adicionada não existe!'})
+                    msg = 'Matéria adicionada não existe!'
+                    messages.add_message(request, messages.INFO, msg)
+                    return self.render_to_response({'form': form})
                 else:
+                    norma.timestamp = datetime.now()
                     norma.materia = materia
-
-            if form.cleaned_data['indexacao']:
-                norma.indexacao = sub(
-                    '&nbsp;', ' ', strip_tags(form.cleaned_data['indexacao']))
-
-            if form.cleaned_data['observacao']:
-                norma.observacao = sub(
-                    '&nbsp;', ' ', strip_tags(form.cleaned_data['observacao']))
-
-            if 'texto_integral' in request.FILES:
-                norma.texto_integral = request.FILES['texto_integral']
-
-            norma.ementa = sub(
-                '&nbsp;', ' ', strip_tags(form.cleaned_data['ementa']))
-            norma.timestamp = datetime.now()
-            norma.save()
-            return self.form_valid(form)
+                    norma.save()
+            return HttpResponseRedirect(self.get_success_url())
         else:
-            return self.form_invalid(form)
+            return self.render_to_response({'form': form})
 
 
 class NormaTaView(IntegracaoTaView):

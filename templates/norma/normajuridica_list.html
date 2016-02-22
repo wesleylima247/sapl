@@ -1,0 +1,11 @@
+{% extends "crud/list.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% block add_button %}
+
+	<div class="actions btn-group pull-right" role="group">
+	  <a href="{% url 'norma_incluir' %}" class="btn btn-default">
+	    {% blocktrans with verbose_name=view.verbose_name %} Adicionar {{ verbose_name }} {% endblocktrans %}
+	  </a>
+	</div>
+{% endblock %}

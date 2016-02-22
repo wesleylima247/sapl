@@ -1,10 +1,9 @@
+import sapl
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
-
-import sapl
 from materia.models import TipoMateriaLegislativa
 from sapl.layout import form_actions
 
@@ -30,7 +29,7 @@ class NormaJuridicaForm(ModelForm):
         required=False,
         queryset=TipoMateriaLegislativa.objects.all(),
         empty_label='Selecione'
-        )
+    )
 
     numero_materia = forms.CharField(label='Número', required=False)
 
@@ -54,30 +53,23 @@ class NormaJuridicaForm(ModelForm):
                   'ementa',
                   'indexacao',
                   'observacao',
-                  'texto_integral']
+                  'texto_integral',
+                  ]
 
     def __init__(self, *args, **kwargs):
 
         row1 = sapl.layout.to_row(
-            [('tipo', 4),
-             ('numero', 4),
-             ('ano', 4)])
+            [('tipo', 4), ('numero', 4), ('ano', 4)])
 
         row2 = sapl.layout.to_row(
-            [('data', 4),
-             ('esfera_federacao', 4),
-             ('complemento', 4)])
+            [('data', 4), ('esfera_federacao', 4), ('complemento', 4)])
 
         row3 = sapl.layout.to_row(
-            [('tipo_materia', 4),
-             ('numero_materia', 4),
-             ('ano_materia', 4)])
+            [('tipo_materia', 4), ('numero_materia', 4), ('ano_materia', 4)])
 
         row4 = sapl.layout.to_row(
-            [('data_publicacao', 3),
-             ('veiculo_publicacao', 3),
-             ('pagina_inicio_publicacao', 3),
-             ('pagina_fim_publicacao', 3)])
+            [('data_publicacao', 3), ('veiculo_publicacao', 3),
+             ('pagina_inicio_publicacao', 3), ('pagina_fim_publicacao', 3)])
 
         row5 = sapl.layout.to_row(
             [('texto_integral', 12)])
@@ -93,10 +85,8 @@ class NormaJuridicaForm(ModelForm):
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            Fieldset('Cadastro de Norma Jurídica',
-                     Fieldset('Identificação Básica',
-                              row1, row2, row3, row4, row5, row6, row7, row8),
-                     form_actions()
-                     )
+            Fieldset('Identificação Básica',
+                     row1, row2, row3, row4, row5, row6, row7, row8),
+            form_actions()
         )
         super(NormaJuridicaForm, self).__init__(*args, **kwargs)

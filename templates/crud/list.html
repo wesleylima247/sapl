@@ -4,15 +4,18 @@
 {% block base_content %}
 
 {# FIXME is this the best markup to use? #}
-<div class="actions btn-group pull-right" role="group">
-  <a href="{{ view.create_url }}" class="btn btn-default">
-    {% blocktrans with verbose_name=view.verbose_name %} Adicionar {{ verbose_name }} {% endblocktrans %}
-  </a>
+  {% block add_button %}
 
-  {% block more_buttons %}
-  {% endblock more_buttons %}
+    <div class="actions btn-group pull-right" role="group">
+      <a href="{{ view.create_url }}" class="btn btn-default">
+        {% blocktrans with verbose_name=view.verbose_name %} Adicionar {{ verbose_name }} {% endblocktrans %}
+      </a>
 
-</div>
+      {% block more_buttons %}
+      {% endblock more_buttons %}
+    </div>
+  {% endblock %}
+
 
 {% if not rows %}
   <p>{{ NO_ENTRIES_MSG }}</p>
