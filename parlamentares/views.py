@@ -223,46 +223,10 @@ class ParlamentaresView(GenericView):
              'parlamentares': parlamentares})
 
 
-class ParlamentaresCadastroView(FormMixin, GenericView):
-    template_name = "parlamentares/parlamentares_cadastro.html"
-
-    def get_success_url(self):
-        return reverse('parlamentares')
-
-    def get(self, request, *args, **kwargs):
-        form = ParlamentaresForm()
-
-        pk = kwargs['pk']
-        return self.render_to_response({'form': form, 'legislatura_id': pk})
-
-    def post(self, request, *args, **kwargs):
-        form = ParlamentaresForm(request.POST)
-
-        pk = kwargs['pk']
-
-        if form.is_valid():
-            parlamentar = form.save(commit=False)
-            if 'fotografia' in request.FILES:
-                parlamentar.fotografia = request.FILES['fotografia']
-                parlamentar.biografia = sub('&nbsp;',
-                                            ' ',
-                                            strip_tags(form.data['biografia']))
-            parlamentar.save()
-
-            mandato = Mandato()
-            mandato.parlamentar = parlamentar
-            mandato.legislatura = Legislatura.objects.get(id=pk)
-            mandato.save()
-            return self.form_valid(form)
-        else:
-            return self.render_to_response(
-                {'form': form, 'legislatura_id': pk})
-
-
-class DmitryImageField(ImageField):
+class ValidaImageField(ImageField):
 
     def to_python(self, data):
-        f = super(DmitryImageField, self).to_python(data)
+        f = super(ValidaImageField, self).to_python(data)
         if f is None:
             return None
 
@@ -293,6 +257,53 @@ class DmitryImageField(ImageField):
         return f
 
 
+class ParlamentaresCadastroView(FormMixin, GenericView):
+    template_name = "parlamentares/parlamentares_cadastro.html"
+
+    def get_success_url(self):
+        return reverse('parlamentares')
+
+    def get(self, request, *args, **kwargs):
+        form = ParlamentaresForm()
+
+        pk = kwargs['pk']
+        return self.render_to_response({'form': form, 'legislatura_id': pk})
+
+    def post(self, request, *args, **kwargs):
+        form = ParlamentaresForm(request.POST)
+
+        pk = kwargs['pk']
+
+        if form.is_valid():
+            parlamentar = form.save(commit=False)
+            if 'fotografia' in request.FILES:
+                parlamentar.fotografia = request.FILES['fotografia']
+                valida_imagem = ValidaImageField()
+                # import ipdb; ipdb.set_trace()
+                try:
+                    valida_imagem.to_python(request.FILES['fotografia'])
+                except ValidationError:
+                    mensagem = "Por favor, insira uma imagem válida dos formatos\
+                    JPEG, PNG ou BMP"
+                    messages.add_message(request, messages.INFO, mensagem)
+                    return self.render_to_response({'form': form})
+                else:
+                    pass
+            parlamentar.biografia = sub('&nbsp;',
+                                        ' ',
+                                        strip_tags(form.data['biografia']))
+            parlamentar.save()
+
+            mandato = Mandato()
+            mandato.parlamentar = parlamentar
+            mandato.legislatura = Legislatura.objects.get(id=pk)
+            mandato.save()
+            return self.form_valid(form)
+        else:
+            return self.render_to_response(
+                {'form': form, 'legislatura_id': pk})
+
+
 class ParlamentaresEditarView(FormMixin, GenericView):
     template_name = "parlamentares/parlamentares_cadastro.html"
 
@@ -316,17 +327,17 @@ class ParlamentaresEditarView(FormMixin, GenericView):
                 parlamentar = form.save(commit=False)
                 if 'fotografia' in request.FILES:
                     parlamentar.fotografia = request.FILES['fotografia']
-                valida_imagem = DmitryImageField()
-                # import ipdb; ipdb.set_trace()
-                try:
-                    valida_imagem.to_python(request.FILES['fotografia'])
-                except ValidationError:
-                    mensagem = "Por favor, insira uma imagem válida dos formatos\
-                    JPEG, PNG ou BMP"
-                    messages.add_message(request, messages.INFO, mensagem)
-                    return self.render_to_response({'form': form})
-                else:
-                    pass
+                    valida_imagem = ValidaImageField()
+                    # import ipdb; ipdb.set_trace()
+                    try:
+                        valida_imagem.to_python(request.FILES['fotografia'])
+                    except ValidationError:
+                        mensagem = "Por favor, insira uma imagem válida dos formatos\
+                        JPEG, PNG ou BMP"
+                        messages.add_message(request, messages.INFO, mensagem)
+                        return self.render_to_response({'form': form})
+                    else:
+                        pass
                 parlamentar.biografia = sub('&nbsp;',
                                             ' ',
                                             strip_tags(form.data['biografia']))
