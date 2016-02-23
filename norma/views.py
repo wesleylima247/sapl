@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
 from compilacao.views import IntegracaoTaView
 from crud import build_crud
@@ -93,6 +93,43 @@ class NormaIncluirView(CreateView):
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.render_to_response({'form': form})
+
+
+class NormaEditView(CreateView):
+    template_name = "norma/normajuridica_incluir.html"
+    form_class = NormaJuridicaForm
+
+    def get(self, request, *args, **kwargs):
+        norma = NormaJuridica.objects.get(id=self.kwargs['pk'])
+        form = NormaJuridicaForm(instance=norma)
+        return self.render_to_response({'form': form})
+
+    def post(self, request, *args, **kwargs):
+        norma = NormaJuridica.objects.get(id=self.kwargs['pk'])
+        form = NormaJuridicaForm(instance=norma, data=request.POST)
+
+        if form.is_valid():
+            if form.data['tipo_materia']:
+                try:
+                    materia = MateriaLegislativa.objects.get(
+                        tipo_id=form.data['tipo_materia'],
+                        numero=form.data['numero_materia'],
+                        ano=form.data['ano_materia'])
+                except ObjectDoesNotExist:
+                    msg = 'Matéria adicionada não existe!'
+                    messages.add_message(request, messages.INFO, msg)
+                    return self.render_to_response({'form': form})
+                else:
+                    norma.materia = materia
+            norma = form.save(commit=False)
+            norma.timestamp = datetime.now()
+            norma.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response({'form': form})
+
+    def get_success_url(self):
+        return reverse('normajuridica:list')
 
 
 class NormaTaView(IntegracaoTaView):

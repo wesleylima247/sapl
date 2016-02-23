@@ -16,7 +16,7 @@
 			<b><a href="{% url 'normajuridica:detail' obj.pk %}">{{ obj.tipo }} {{ obj.numero}}/{{obj.ano}} - {{ obj.data }}</a></b>
 			<br />
 			{{ obj.ementa|safe }}
-			<br /><br />
+			<br />
 		{% endfor %}
 		{% include "paginacao.html" %}
 	{% endif %}
