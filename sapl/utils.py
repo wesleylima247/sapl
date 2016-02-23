@@ -61,8 +61,8 @@ def make_choices(*choice_pairs):
 YES_NO_CHOICES = [(True, _('Sim')), (False, _('Não'))]
 
 
-# Validador de PDFS, DOCX, ODT e ZIP as
-# Classes UploadedFileInMemoryError e DocField
+# Validador de PDFS, DOCX, ODT e ZIP
+# Nas Classes UploadedFileInMemoryError e DocField
 
 
 class UploadedFileInMemoryError(Exception):
