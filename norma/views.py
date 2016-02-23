@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView
 
 from compilacao.views import IntegracaoTaView
 from crud import build_crud
