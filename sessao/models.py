@@ -4,7 +4,10 @@ from django.utils.translation import ugettext_lazy as _
 from materia.models import MateriaLegislativa
 from parlamentares.models import (CargoMesa, Legislatura, Parlamentar,
                                   SessaoLegislativa)
-from sapl.utils import YES_NO_CHOICES, make_choices
+from sapl.utils import (YES_NO_CHOICES, make_choices,
+                        restringe_tipos_de_arquivo_txt,
+                        restringe_tipos_de_arquivo_video,
+                        restringe_tipos_de_arquivo_audio)
 
 
 class TipoSessaoPlenaria(models.Model):
@@ -54,20 +57,24 @@ class SessaoPlenaria(models.Model):
         blank=True, null=True, verbose_name=_('Encerramento'))
     url_audio = models.CharField(
         max_length=150, blank=True,
-        verbose_name=_('URL Arquivo Áudio (Formatos MP3 / AAC)'))
+        verbose_name=_('URL Arquivo Áudio (Formatos MP3 / AAC)'),
+        validators=[restringe_tipos_de_arquivo_audio])
     url_video = models.CharField(
         max_length=150, blank=True,
-        verbose_name=_('URL Arquivo Vídeo (Formatos MP4 / FLV / WebM)'))
+        verbose_name=_('URL Arquivo Vídeo (Formatos MP4 / FLV / WebM)'),
+        validators=[restringe_tipos_de_arquivo_video])
     upload_pauta = models.FileField(
         blank=True,
         null=True,
         upload_to=pauta_upload_path,
-        verbose_name=_('Pauta da Sessão'))
+        verbose_name=_('Pauta da Sessão'),
+        validators=[restringe_tipos_de_arquivo_txt])
     upload_ata = models.FileField(
         blank=True,
         null=True,
         upload_to=ata_upload_path,
-        verbose_name=_('Ata da Sessão'))
+        verbose_name=_('Ata da Sessão'),
+        validators=[restringe_tipos_de_arquivo_txt])
     iniciada = models.NullBooleanField(blank=True,
                                        choices=YES_NO_CHOICES,
                                        verbose_name=_('Sessão iniciada?'))

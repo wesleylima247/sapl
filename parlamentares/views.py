@@ -7,10 +7,10 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import FormMixin
 from vanilla import GenericView
-from django.forms.fields import ImageField
-from io import BytesIO
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+
+from sapl.utils import restringe_tipos_de_arquivo_img
 
 from crud import build_crud
 
@@ -224,40 +224,6 @@ class ParlamentaresView(GenericView):
              'parlamentares': parlamentares})
 
 
-class ValidaImageField(ImageField):
-
-    def to_python(self, data):
-        f = super(ValidaImageField, self).to_python(data)
-        if f is None:
-            return None
-
-        try:
-            from PIL import Image
-        except ImportError:
-            import Image
-
-        if hasattr(data, 'temporary_file_path'):
-            file = data.temporary_file_path()
-        else:
-            if hasattr(data, 'read'):
-                file = BytesIO(data.read())
-            else:
-                file = BytesIO(data['content'])
-
-        try:
-            im = Image.open(file)
-            if im.format not in ('BMP', 'PNG', 'JPEG'):
-                return -1
-        except ImportError:
-            return -2
-        except Exception:
-            return -3
-
-        if hasattr(f, 'seek') and callable(f.seek):
-            f.seek(0)
-        return f
-
-
 class ParlamentaresCadastroView(FormMixin, GenericView):
     template_name = "parlamentares/parlamentares_cadastro.html"
 
@@ -277,7 +243,7 @@ class ParlamentaresCadastroView(FormMixin, GenericView):
 
         if form.is_valid():
             parlamentar = form.save(commit=False)
-            if 'email' in request.POST:
+            if request.POST['email'] != '':
                 try:
                     validate_email(request.POST['email'])
                 except ValidationError:
@@ -287,18 +253,16 @@ class ParlamentaresCadastroView(FormMixin, GenericView):
                 else:
                     pass
             if 'fotografia' in request.FILES:
-                parlamentar.fotografia = request.FILES['fotografia']
-                valida_imagem = ValidaImageField()
-                # import ipdb; ipdb.set_trace()
                 try:
-                    valida_imagem.to_python(request.FILES['fotografia'])
+                    restringe_tipos_de_arquivo_img(
+                        request.FILES['fotografia'])
                 except ValidationError:
                     mensagem = "Por favor, insira uma imagem válida dos formatos\
                     JPEG, PNG ou BMP"
                     messages.add_message(request, messages.INFO, mensagem)
                     return self.render_to_response({'form': form})
                 else:
-                    pass
+                    parlamentar.fotografia = request.FILES['fotografia']
             parlamentar.biografia = sub('&nbsp;',
                                         ' ',
                                         strip_tags(form.data['biografia']))
@@ -345,18 +309,16 @@ class ParlamentaresEditarView(FormMixin, GenericView):
                     else:
                         pass
                 if 'fotografia' in request.FILES:
-                    parlamentar.fotografia = request.FILES['fotografia']
-                    valida_imagem = ValidaImageField()
-                    # import ipdb; ipdb.set_trace()
                     try:
-                        valida_imagem.to_python(request.FILES['fotografia'])
+                        restringe_tipos_de_arquivo_img(
+                            request.FILES['fotografia'])
                     except ValidationError:
                         mensagem = "Por favor, insira uma imagem válida dos formatos\
                         JPEG, PNG ou BMP"
                         messages.add_message(request, messages.INFO, mensagem)
                         return self.render_to_response({'form': form})
                     else:
-                        pass
+                        parlamentar.fotografia = request.FILES['fotografia']
                 parlamentar.biografia = sub('&nbsp;',
                                             ' ',
                                             strip_tags(form.data['biografia']))

@@ -3,7 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from comissoes.models import Comissao
 from parlamentares.models import Parlamentar, Partido
-from sapl.utils import YES_NO_CHOICES, make_choices, xstr
+from sapl.utils import (YES_NO_CHOICES, make_choices,
+                        xstr, restringe_tipos_de_arquivo_txt)
 
 
 class TipoMateriaLegislativa(models.Model):
@@ -120,7 +121,8 @@ class MateriaLegislativa(models.Model):
         blank=True,
         null=True,
         upload_to=texto_upload_path,
-        verbose_name=_('Texto Original (PDF)'))
+        verbose_name=_('Texto Original (PDF)'),
+        validators=[restringe_tipos_de_arquivo_txt])
 
     class Meta:
         verbose_name = _('Matéria Legislativa')

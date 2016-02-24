@@ -1,7 +1,10 @@
 from django.apps import apps
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+
+import magic
 
 # SAPL business apps
 #  This is a dependency order: each entry depends only on previous ones
@@ -61,53 +64,82 @@ def make_choices(*choice_pairs):
 YES_NO_CHOICES = [(True, _('Sim')), (False, _('Não'))]
 
 
-# Validador de PDFS, DOCX, ODT e ZIP
-# Nas Classes UploadedFileInMemoryError e DocField
+# Validadores de arquivos abaixo
+
+def restringe_tipos_de_arquivo_txt(value):
+    lista_texto = (
+     'application/vnd.oasis.opendocument.text',
+     'application/x-vnd.oasis.opendocument.text',
+     'application/pdf',
+     'application/x-pdf',
+     'application/acrobat',
+     'applications/vnd.pdf',
+     'text/pdf',
+     'text/x-pdf',
+     'text/plain',
+     'application/txt',
+     'browser/internal',
+     'text/anytext',
+     'widetext/plain',
+     'widetext/paragraph',
+     'application/msword',
+     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    )
+    mime = magic.from_buffer(value.read(), mime=True)
+    mime = mime.decode()
+    if mime not in lista_texto:
+        raise ValidationError(_('Tipo de arquivo não suportado'))
 
 
-class UploadedFileInMemoryError(Exception):
-    pass
+def restringe_tipos_de_arquivo_img(value):
+    lista_img = (
+     'image/jpeg',
+     'image/jpg',
+     'image/jpe_',
+     'image/pjpeg',
+     'image/vnd.swiftview-jpeg',
+     'application/jpg',
+     'application/x-jpg',
+     'image/pjpeg',
+     'image/pipeg',
+     'image/vnd.swiftview-jpeg',
+     'image/x-xbitmap',
+     'image/bmp',
+     'image/x-bmp',
+     'image/x-bitmap',
+     'image/png',
+     'application/png',
+     'application/x-png',
+    )
+    mime = magic.from_buffer(value.read(), mime=True)
+    mime = mime.decode()
+    if mime not in lista_img:
+        raise ValidationError(_('Tipo de arquivo não suportado'))
 
 
-class DocField(forms.FileField):
-    default_error_messages = {
-        'invalid': _(u"Envie algum arquivo com o formato especificado."),
-        'missing': _(u"Nenhum arquivo enviado"),
-        'empty': _(u"O arquivo enviado está vazio"),
-        'not_doc': _(u"Envie um documento válido. O documento está corrompido\
-                       ou não é do formato especificado."),
-    }
+def restringe_tipos_de_arquivo_video(value):
+    lista_video = (
+     'video/mp4v-es',
+     'video/msvideo',
+     'video/avi',
+     'video/x-msvideo',
+     'video/x-flv',
+     'video/mp4',
+    )
 
-    def clean(self, data, initial=None):
-        super(DocField, self).clean(initial or data)
+    mime = magic.from_buffer(value.read(), mime=True)
+    mime = mime.decode()
+    if mime not in lista_video:
+        raise ValidationError(_('Tipo de arquivo não suportado'))
 
-        # before save check if the writing sample is valid
-        import os
-        import re
-        from django.forms.util import ValidationError
 
-        match = r'PDF document|Microsoft Office Document|\
-                  Zip archive data|Document'
+def restringe_tipos_de_arquivo_audio(value):
+    lista_audio = (
+     'audio/mp3',
+     'audio/mpeg',
+    )
 
-        if hasattr(data, 'temporary_file_path'):
-            file = data.temporary_file_path()
-        else:
-            # throw an error because uploaded file in memory
-            raise UploadedFileInMemoryError('O arquivo inserido não\
-                está salvo no disco rígido.')
-
-        out = os.popen('file %s' % file)
-        ck = re.search(match, out.read())
-        if ck is None:
-            raise ValidationError(self.error_messages['not_doc'])
-        #  check further for docx file as it's zip file
-        if ck.group(0)[0] == 'Z':
-            import zipfile
-            docx = 'word/document.xml'
-            if not zipfile.is_zipfile(file):
-                raise ValidationError(self.error_messages['not_doc'])
-
-            zf = zipfile.ZipFile(file)
-            if docx not in zf.namelist():
-                raise ValidationError(self.error_messages['not_doc'])
-        return data
+    mime = magic.from_buffer(value.read(), mime=True)
+    mime = mime.decode()
+    if mime not in lista_audio:
+        raise ValidationError(_('Tipo de arquivo não suportado'))

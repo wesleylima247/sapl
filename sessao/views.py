@@ -1,7 +1,8 @@
 from datetime import datetime
 from re import sub
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.forms.util import ErrorList
 from django.utils.html import strip_tags
@@ -9,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.edit import FormMixin
 from rest_framework import generics
+
+from sapl.utils import restringe_tipos_de_arquivo_txt
 
 from crud import build_crud, make_pagination
 from materia.models import (Autoria, DocumentoAcessorio,
@@ -2304,10 +2307,28 @@ class SessaoCadastroView(FormMixin, sessao_crud.CrudDetailView):
             sessao = form.save(commit=False)
 
             if 'upload_ata' in request.FILES:
-                sessao.upload_ata = request.FILES['upload_ata']
+                try:
+                    restringe_tipos_de_arquivo_txt(
+                        request.FILES['upload_ata'])
+                except ValidationError:
+                    mensagem = "Por favor, envie um documento\
+                     no formato especificado."
+                    messages.add_message(request, messages.INFO, mensagem)
+                    return self.render_to_response({'form': form})
+                else:
+                    sessao.texto_original = request.FILES['upload_ata']
 
             if 'upload_pauta' in request.FILES:
-                sessao.upload_pauta = request.FILES['upload_pauta']
+                try:
+                    restringe_tipos_de_arquivo_txt(
+                        request.FILES['upload_pauta'])
+                except ValidationError:
+                    mensagem = "Por favor, envie um documento\
+                     no formato especificado."
+                    messages.add_message(request, messages.INFO, mensagem)
+                    return self.render_to_response({'form': form})
+                else:
+                    sessao.texto_original = request.FILES['upload_pauta']
 
             sessao.save()
 

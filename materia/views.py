@@ -2,7 +2,7 @@ from datetime import datetime
 from re import sub
 
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
@@ -19,8 +19,7 @@ from norma.models import LegislacaoCitada, NormaJuridica, TipoNormaJuridica
 from parlamentares.models import Partido
 from sessao.models import AcompanharMateria
 
-from sapl.utils import DocField, UploadedFileInMemoryError
-from django.core.exceptions import ValidationError
+from sapl.utils import restringe_tipos_de_arquivo_txt
 
 from .forms import (AutoriaForm, DespachoInicialForm, DocumentoAcessorioForm,
                     FormularioCadastroForm, FormularioSimplificadoForm,
@@ -245,7 +244,16 @@ class FormularioSimplificadoView(FormMixin, GenericView):
         if form.is_valid:
             materia = form.save(commit=False)
             if 'texto_original' in request.FILES:
-                materia.texto_original = request.FILES['texto_original']
+                df = DocField()
+                try:
+                    df.clean(request.FILES['texto_original'])
+                except ValidationError:
+                    mensagem = "Envie um documento válido. O documento está corrompido\
+                                ou não é do formato especificado."
+                    messages.add_message(request, messages.INFO, mensagem)
+                    return self.render_to_response({'form': form})
+                else:
+                    materia.texto_original = request.FILES['texto_original']
             materia.save()
             return self.form_valid(form)
         else:
@@ -1455,12 +1463,12 @@ class ProposicaoView(FormMixin, GenericView):
         if form.is_valid():
             proposicao = form.save(commit=False)
             if 'texto_original' in request.FILES:
-                df = DocField()
                 try:
-                    df.clean(request.FILES['texto_original'])
+                    restringe_tipos_de_arquivo_txt(
+                        request.FILES['texto_original'])
                 except ValidationError:
-                    mensagem = "Envie um documento válido. O documento está corrompido\
-                                ou não é do formato especificado."
+                    mensagem = "Por favor, envie um documento\
+                     no formato especificado."
                     messages.add_message(request, messages.INFO, mensagem)
                     return self.render_to_response({'form': form})
                 else:
