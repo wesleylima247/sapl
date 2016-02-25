@@ -115,31 +115,3 @@ def restringe_tipos_de_arquivo_img(value):
     mime = mime.decode()
     if mime not in lista_img:
         raise ValidationError(_('Tipo de arquivo não suportado'))
-
-
-def restringe_tipos_de_arquivo_video(value):
-    lista_video = (
-     'video/mp4v-es',
-     'video/msvideo',
-     'video/avi',
-     'video/x-msvideo',
-     'video/x-flv',
-     'video/mp4',
-    )
-
-    mime = magic.from_buffer(value.read(), mime=True)
-    mime = mime.decode()
-    if mime not in lista_video:
-        raise ValidationError(_('Tipo de arquivo não suportado'))
-
-
-def restringe_tipos_de_arquivo_audio(value):
-    lista_audio = (
-     'audio/mp3',
-     'audio/mpeg',
-    )
-
-    mime = magic.from_buffer(value.read(), mime=True)
-    mime = mime.decode()
-    if mime not in lista_audio:
-        raise ValidationError(_('Tipo de arquivo não suportado'))
