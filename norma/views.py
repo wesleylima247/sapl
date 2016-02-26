@@ -1,3 +1,4 @@
+import ipdb
 from datetime import datetime
 
 from django.contrib import messages
@@ -91,7 +92,6 @@ class NormaPesquisaView(GenericView):
             kwargs['publicação_inicial'] = form.data['publicação_inicial']
             kwargs['publicação_final'] = form.data['publicação_final']
 
-        NormaJuridica.objects.filter(**kwargs)
         request.session['kwargs'] = kwargs
         return redirect('list_pesquisa_norma')
 
@@ -103,13 +103,44 @@ class PesquisaNormaListView(ListView):
 
     def get_queryset(self):
         kwargs = self.request.session['kwargs']
+
         if 'periodo_inicial' and 'publicacao_inicial' in kwargs:
-            pass
+            ##### FALTA OS OUTROS CAMPOS QUE ESTIVEREM NO KWARGS
+            periodo_inicial = datetime.strptime(
+                kwargs['periodo_inicial'],
+                '%d/%m/%Y').strftime('%Y-%m-%d')
+            periodo_final = datetime.strptime(
+                kwargs['periodo_final'],
+                '%d/%m/%Y').strftime('%Y-%m-%d')
+            publicação_inicial = datetime.strptime(
+                kwargs['publicação_inicial'],
+                '%d/%m/%Y').strftime('%Y-%m-%d')
+            publicação_final = datetime.strptime(
+                kwargs['publicação_final'],
+                '%d/%m/%Y').strftime('%Y-%m-%d')
+
+            normas = NormaJuridica.objects.filter(
+                data__range=(periodo_inicial, periodo_final),
+                data_publicacao__range=(publicação_inicial, publicação_final))
         elif 'periodo_inicial' in kwargs:
-            pass
+            ##### FALTA OS OUTROS CAMPOS QUE ESTIVEREM NO KWARGS
+            inicial = datetime.strptime(kwargs['periodo_inicial'],
+                                        '%d/%m/%Y').strftime('%Y-%m-%d')
+            final = datetime.strptime(kwargs['periodo_inicial'],
+                                        '%d/%m/%Y').strftime('%Y-%m-%d')
+
+            normas = NormaJuridica.objects.filter(data__range=(inicial, final))
         elif 'publicação_inicial' in kwargs:
-            pass
+            ##### FALTA OS OUTROS CAMPOS QUE ESTIVEREM NO KWARGS
+            inicial = datetime.strptime(kwargs['publicação_inicial'],
+                                        '%d/%m/%Y').strftime('%Y-%m-%d')
+            final = datetime.strptime(kwargs['publicação_final'],
+                                        '%d/%m/%Y').strftime('%Y-%m-%d')
+
+            normas = NormaJuridica.objects.filter(data_publicacao__range=(
+                                                    inicial, final))
         else:
+            ##### FALTA OS CAMPOS DE DATA
             normas = NormaJuridica.objects.filter(
                 **kwargs).order_by('-ano', '-numero')
         return normas
