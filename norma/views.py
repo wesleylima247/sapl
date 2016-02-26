@@ -1,23 +1,19 @@
-import ipdb
 from datetime import datetime
 
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView
-from django.views.generic.edit import FormMixin
 from django.shortcuts import redirect
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import CreateView, ListView
 from vanilla.views import GenericView
-from django.views.generic import ListView
-from django.core.urlresolvers import reverse
-from crud import Crud, make_pagination
+
 from compilacao.views import IntegracaoTaView
-from crud import build_crud
+from crud import build_crud, make_pagination
 from materia.models import MateriaLegislativa
 
-from .forms import NormaJuridicaPesquisaForm, NormaJuridicaForm
+from .forms import NormaJuridicaForm, NormaJuridicaPesquisaForm
 from .models import (AssuntoNorma, LegislacaoCitada, NormaJuridica,
                      TipoNormaJuridica)
 
@@ -107,7 +103,6 @@ class PesquisaNormaListView(ListView):
 
     def get_queryset(self):
         kwargs = self.request.session['kwargs']
-        ipdb.set_trace()  ######### Break Point ###########
         if 'periodo_inicial' and 'publicacao_inicial' in kwargs:
             pass
         elif 'periodo_inicial' in kwargs:

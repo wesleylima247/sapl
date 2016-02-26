@@ -33,9 +33,9 @@ class NormaJuridicaPesquisaForm(ModelForm):
                                         attrs={'class': 'dateinput'}))
 
     periodo_final = forms.DateField(label=u'Período Final',
-                                      input_formats=['%d/%m/%Y'],
-                                      required=False,
-                                      widget=forms.DateInput(
+                                    input_formats=['%d/%m/%Y'],
+                                    required=False,
+                                    widget=forms.DateInput(
                                         format='%d/%m/%Y',
                                         attrs={'class': 'dateinput'}))
 
@@ -61,7 +61,7 @@ class NormaJuridicaPesquisaForm(ModelForm):
                   'periodo_inicial',
                   'periodo_final',
                   'publicação_inicial',
-                  'publicação_final',]
+                  'publicação_final']
 
     def __init__(self, *args, **kwargs):
 
