@@ -1,3 +1,4 @@
+import ipdb
 from datetime import datetime
 
 from django.contrib import messages
@@ -6,12 +7,17 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView
-
+from django.views.generic.edit import FormMixin
+from django.shortcuts import redirect
+from vanilla.views import GenericView
+from django.views.generic import ListView
+from django.core.urlresolvers import reverse
+from crud import Crud, make_pagination
 from compilacao.views import IntegracaoTaView
 from crud import build_crud
 from materia.models import MateriaLegislativa
 
-from .forms import NormaJuridicaForm
+from .forms import NormaJuridicaPesquisaForm, NormaJuridicaForm
 from .models import (AssuntoNorma, LegislacaoCitada, NormaJuridica,
                      TipoNormaJuridica)
 
@@ -63,12 +69,78 @@ legislacao_citada_crud = build_crud(
     ])
 
 
+class NormaPesquisaView(GenericView):
+    template_name = "norma/pesquisa.html"
+
+    def get_success_url(self):
+        return reverse('normajuridica:norma_pesquisa')
+
+    def get(self, request, *args, **kwargs):
+        form = NormaJuridicaPesquisaForm()
+        return self.render_to_response({'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = NormaJuridicaPesquisaForm(request.POST)
+
+        if form.data['tipo']:
+            kwargs['tipo'] = form.data['tipo']
+        if form.data['numero']:
+            kwargs['numero'] = form.data['numero']
+        if form.data['ano']:
+            kwargs['ano'] = form.data['ano']
+        if form.data['periodo_inicial'] and form.data['periodo_final']:
+            kwargs['periodo_inicial'] = form.data['periodo_inicial']
+            kwargs['periodo_final'] = form.data['periodo_final']
+        if form.data['publicação_inicial'] and form.data['publicação_final']:
+            kwargs['publicação_inicial'] = form.data['publicação_inicial']
+            kwargs['publicação_final'] = form.data['publicação_final']
+
+        NormaJuridica.objects.filter(**kwargs)
+        request.session['kwargs'] = kwargs
+        return redirect('list_pesquisa_norma')
+
+
+class PesquisaNormaListView(ListView):
+    template_name = 'norma/list_pesquisa.html'
+    model = NormaJuridica
+    paginate_by = 10
+
+    def get_queryset(self):
+        kwargs = self.request.session['kwargs']
+        ipdb.set_trace()  ######### Break Point ###########
+        if 'periodo_inicial' and 'publicacao_inicial' in kwargs:
+            pass
+        elif 'periodo_inicial' in kwargs:
+            pass
+        elif 'publicação_inicial' in kwargs:
+            pass
+        else:
+            normas = NormaJuridica.objects.filter(
+                **kwargs).order_by('-ano', '-numero')
+        return normas
+
+    def get_context_data(self, **kwargs):
+        context = super(PesquisaNormaListView, self).get_context_data(
+            **kwargs)
+
+        paginator = context['paginator']
+        page_obj = context['page_obj']
+
+        context['page_range'] = make_pagination(
+            page_obj.number, paginator.num_pages)
+        return context
+
+
 class NormaIncluirView(CreateView):
     template_name = "norma/normajuridica_incluir.html"
     form_class = NormaJuridicaForm
 
     def get_success_url(self):
         return reverse('normajuridica:list')
+
+    def get(self, request, *args, **kwargs):
+        form = NormaJuridicaForm()
+        return self.render_to_response({'form': form})
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -87,9 +159,9 @@ class NormaIncluirView(CreateView):
                     messages.add_message(request, messages.INFO, msg)
                     return self.render_to_response({'form': form})
                 else:
-                    norma.timestamp = datetime.now()
                     norma.materia = materia
-                    norma.save()
+            norma.timestamp = datetime.now()
+            norma.save()
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.render_to_response({'form': form})

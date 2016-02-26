@@ -1,14 +1,13 @@
-{% extends "crud/list.html" %}
+{% extends "crud/detail.html" %}
 {% load i18n %}
 {% load crispy_forms_tags %}
-{% block base_content %}
-	<div class="actions btn-group pull-right" role="group">
-	  <a href="{% url 'norma_incluir' %}" class="btn btn-default">
-	    {% blocktrans with verbose_name=view.verbose_name %} Adicionar {{ verbose_name }} {% endblocktrans %}
-	  </a>
-	</div>
-	<br /><br /><br />
-	{% if object_list %}
+{% block actions %}{% endblock %}
+{% block detail_content %}
+  <div class="actions btn-group pull-right" role="group">
+    <a href="{% url 'norma_incluir' %}" class="btn btn-default">Adicionar Norma Jurídica</a>
+  </div>
+  <br /><br /><br />
+  {% if object_list %}
   	<table class="table table-striped table-bordered">
   		<thead class="thead-default">
         <tr>
@@ -33,4 +32,5 @@
   {% else %}
   	<h2>Nenhum Registro recuperado</h2>
   {% endif %}
-{% endblock %}
+
+{% endblock detail_content %}

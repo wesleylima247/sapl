@@ -23,6 +23,69 @@ class HorizontalRadioRenderer(forms.RadioSelect.renderer):
         return mark_safe(u' '.join([u'%s ' % w for w in self]))
 
 
+class NormaJuridicaPesquisaForm(ModelForm):
+
+    periodo_inicial = forms.DateField(label=u'Período Inicial',
+                                      input_formats=['%d/%m/%Y'],
+                                      required=False,
+                                      widget=forms.DateInput(
+                                        format='%d/%m/%Y',
+                                        attrs={'class': 'dateinput'}))
+
+    periodo_final = forms.DateField(label=u'Período Final',
+                                      input_formats=['%d/%m/%Y'],
+                                      required=False,
+                                      widget=forms.DateInput(
+                                        format='%d/%m/%Y',
+                                        attrs={'class': 'dateinput'}))
+
+    publicação_inicial = forms.DateField(label=u'Publicação Inicial',
+                                         input_formats=['%d/%m/%Y'],
+                                         required=False,
+                                         widget=forms.DateInput(
+                                            format='%d/%m/%Y',
+                                            attrs={'class': 'dateinput'}))
+
+    publicação_final = forms.DateField(label=u'Publicação Final',
+                                       input_formats=['%d/%m/%Y'],
+                                       required=False,
+                                       widget=forms.DateInput(
+                                            format='%d/%m/%Y',
+                                            attrs={'class': 'dateinput'}))
+
+    class Meta:
+        model = NormaJuridica
+        fields = ['tipo',
+                  'numero',
+                  'ano',
+                  'periodo_inicial',
+                  'periodo_final',
+                  'publicação_inicial',
+                  'publicação_final',]
+
+    def __init__(self, *args, **kwargs):
+
+        row1 = sapl.layout.to_row(
+            [('tipo', 12)])
+
+        row2 = sapl.layout.to_row(
+            [('numero', 6), ('ano', 6)])
+
+        row3 = sapl.layout.to_row(
+            [('periodo_inicial', 6), ('periodo_final', 6)])
+
+        row4 = sapl.layout.to_row(
+            [('publicação_inicial', 6), ('publicação_final', 6)])
+
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+             Fieldset('Pesquisa Norma Juridica',
+                      row1, row2, row3, row4),
+             form_actions(save_label='Pesquisar')
+        )
+        super(NormaJuridicaPesquisaForm, self).__init__(*args, **kwargs)
+
+
 class NormaJuridicaForm(ModelForm):
 
     tipo_materia = forms.ModelChoiceField(

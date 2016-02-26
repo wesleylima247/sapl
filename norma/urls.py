@@ -1,8 +1,7 @@
 from django.conf.urls import include, url
-
-from norma.views import (NormaEditView, NormaIncluirView, NormaTaView,
-                         assunto_norma_crud, norma_temporario_crud,
-                         tipo_norma_crud)
+from norma.views import (NormaIncluirView, NormaTaView, assunto_norma_crud,
+                         norma_temporario_crud, PesquisaNormaListView,
+                         tipo_norma_crud, NormaPesquisaView, NormaEditView)
 
 # norma_url_patterns = norma_crud.urlpatterns + []
 norma_url_patterns = norma_temporario_crud.urlpatterns + [
@@ -21,4 +20,8 @@ urlpatterns = [
     url(r'^norma/incluir$', NormaIncluirView.as_view(), name='norma_incluir'),
     url(r'^norma/(?P<pk>[0-9]+)/editar$',
         NormaEditView.as_view(), name='norma_editar'),
+    url(r'^norma/pesquisa$',
+     NormaPesquisaView.as_view(), name='norma_pesquisa'),
+    url(r'^norma/pesquisa-resultado$',
+     PesquisaNormaListView.as_view(), name='list_pesquisa_norma'),
 ]
