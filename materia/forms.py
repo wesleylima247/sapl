@@ -75,15 +75,6 @@ class ProposicaoForm(ModelForm):
         fields = ['tipo',
                   'descricao',
                   'texto_original']
-        exclude = ['autor',
-                   'data_envio',
-                   'data_recebimento',
-                   'data_devolucao',
-                   'justificativa_devolucao',
-                   'numero_proposicao',
-                   'status',
-                   'materia',
-                   'documento']
 
     def __init__(self, *args, **kwargs):
 

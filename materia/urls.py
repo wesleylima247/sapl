@@ -11,15 +11,15 @@ from materia.views import (AcompanhamentoConfirmarView,
                            MateriaAnexadaEditView, MateriaAnexadaView,
                            MateriaLegislativaPesquisaView, MateriaTaView,
                            NumeracaoEditView, NumeracaoView,
-                           PesquisaMateriaListView, ProposicaoListView,
-                           ProposicaoTaView, ProposicaoView, RelatoriaEditView,
-                           RelatoriaView, TramitacaoEditView, TramitacaoView,
-                           autor_crud, materia_legislativa_crud, orgao_crud,
-                           origem_crud, regime_tramitacao_crud,
-                           status_tramitacao_crud, tipo_autor_crud,
-                           tipo_documento_crud, tipo_fim_relatoria_crud,
-                           tipo_materia_crud, tipo_proposicao_crud,
-                           unidade_tramitacao_crud)
+                           PesquisaMateriaListView, ProposicaoEditView,
+                           ProposicaoListView, ProposicaoTaView,
+                           ProposicaoView, RelatoriaEditView, RelatoriaView,
+                           TramitacaoEditView, TramitacaoView, autor_crud,
+                           materia_legislativa_crud, orgao_crud, origem_crud,
+                           regime_tramitacao_crud, status_tramitacao_crud,
+                           tipo_autor_crud, tipo_documento_crud,
+                           tipo_fim_relatoria_crud, tipo_materia_crud,
+                           tipo_proposicao_crud, unidade_tramitacao_crud)
 
 materia_legislativa_patterns = materia_legislativa_crud.urlpatterns
 
@@ -93,6 +93,8 @@ urlpatterns = [
         RelatoriaEditView.as_view(), name='relatoria_edit'),
     url(r'^materia/proposicao$',
         ProposicaoView.as_view(), name='adicionar_proposicao'),
+    url(r'^materia/proposicao/(?P<id>\d+)/edit$',
+        ProposicaoEditView.as_view(), name='editar_proposicao'),
     url(r'^materia/proposicao_list$',
         ProposicaoListView.as_view(), name='list_proposicao'),
     url(r'^materia/pesquisar-materia$',

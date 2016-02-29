@@ -12,7 +12,7 @@ from django.shortcuts import redirect
 from django.template import Context, loader
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView
 from django.views.generic.edit import FormMixin
 from vanilla.views import GenericView
 
@@ -1658,7 +1658,17 @@ class PesquisaMateriaListView(ListView):
         return context
 
 
-class ProposicaoView(FormMixin, GenericView):
+class ProposicaoEditView(CreateView):
+    template_name = "materia/proposicao.html"
+    form_class = ProposicaoForm
+
+    def get(self, request, *args, **kwargs):
+        proposicao = Proposicao.objects.get(id=self.kwargs['id'])
+        form = ProposicaoForm(instance=proposicao)
+        return self.render_to_response({'form': form})
+
+
+class ProposicaoView(CreateView):
     template_name = "materia/proposicao.html"
 
     def get_success_url(self):
