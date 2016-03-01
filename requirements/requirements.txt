@@ -1,5 +1,6 @@
 Django<1.9
-djangorestframework
+PyYAML
+Unipath
 django-admin-bootstrapped
 django-bootstrap3
 django-bower
@@ -7,11 +8,11 @@ django-braces
 django-compressor
 django-crispy-forms
 django-extra-views
-django-vanilla-views
 django-sass-processor
+django-vanilla-views
+djangorestframework
+git+git://github.com/interlegis/trml2pdf.git
 libsass
 psycopg2
+python-magic
 pytz
-PyYAML
-git+git://github.com/interlegis/trml2pdf.git
-Unipath
