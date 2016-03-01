@@ -5,9 +5,7 @@ from materia.models import MateriaLegislativa
 from parlamentares.models import (CargoMesa, Legislatura, Parlamentar,
                                   SessaoLegislativa)
 from sapl.utils import (YES_NO_CHOICES, make_choices,
-                        restringe_tipos_de_arquivo_txt,
-                        restringe_tipos_de_arquivo_video,
-                        restringe_tipos_de_arquivo_audio)
+                        restringe_tipos_de_arquivo_txt)
 
 
 class TipoSessaoPlenaria(models.Model):
@@ -57,12 +55,10 @@ class SessaoPlenaria(models.Model):
         blank=True, null=True, verbose_name=_('Encerramento'))
     url_audio = models.CharField(
         max_length=150, blank=True,
-        verbose_name=_('URL Arquivo Áudio (Formatos MP3 / AAC)'),
-        validators=[restringe_tipos_de_arquivo_audio])
+        verbose_name=_('URL Arquivo Áudio (Formatos MP3 / AAC)'))
     url_video = models.CharField(
         max_length=150, blank=True,
-        verbose_name=_('URL Arquivo Vídeo (Formatos MP4 / FLV / WebM)'),
-        validators=[restringe_tipos_de_arquivo_video])
+        verbose_name=_('URL Arquivo Vídeo (Formatos MP4 / FLV / WebM)'))
     upload_pauta = models.FileField(
         blank=True,
         null=True,
