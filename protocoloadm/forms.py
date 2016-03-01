@@ -1,7 +1,7 @@
 from datetime import date
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit, Button
 from django import forms
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
@@ -26,8 +26,7 @@ def tramitacao():
             (False, 'Não')]
 
 
-TIPOS_PROTOCOLO = [('', 'Selecione'),
-                   ('0', 'Enviado'),
+TIPOS_PROTOCOLO = [('0', 'Enviado'),
                    ('1', 'Recebido')]
 
 
@@ -179,7 +178,7 @@ class ProtocoloDocumentForm(forms.Form):
 
     tipo_protocolo = forms.ChoiceField(required=True,
                                        label='Tipo de Protocolo',
-                                       choices=TIPOS_PROTOCOLO[1:],
+                                       choices=TIPOS_PROTOCOLO,
                                        widget=forms.RadioSelect(
                                            renderer=HorizontalRadioRenderer))
 
@@ -246,7 +245,7 @@ class ProtocoloMateriaForm(forms.Form):
 
     tipo_protocolo = forms.ChoiceField(required=True,
                                        label='Tipo de Protocolo',
-                                       choices=TIPOS_PROTOCOLO[1:],
+                                       choices=TIPOS_PROTOCOLO,
                                        widget=forms.RadioSelect(
                                            renderer=HorizontalRadioRenderer))
 
@@ -261,12 +260,15 @@ class ProtocoloMateriaForm(forms.Form):
     ementa = forms.CharField(
         widget=forms.Textarea, label='Ementa', required=True)
 
-    autor = forms.ModelChoiceField(
-        label='Autor',
-        required=False,
-        queryset=Autor.objects.all().order_by('tipo'),
-        empty_label='Selecione',
-    )
+    # autor = forms.ModelChoiceField(
+    #     label='Autor',
+    #     required=False,
+    #     queryset=Autor.objects.all().order_by('tipo'),
+    #     empty_label='Selecione',
+    # )
+
+    autor = forms.CharField(widget=forms.HiddenInput(), required=False)
+    # autor_nome = forms.CharField(label='Autor', required=False)
 
     observacao = forms.CharField(required=True,
                                  widget=forms.Textarea,
@@ -277,13 +279,20 @@ class ProtocoloMateriaForm(forms.Form):
         row1 = sapl.layout.to_row(
             [('numeracao', 12)])
         row2 = sapl.layout.to_row(
-            [('tipo_materia', 6),
-             ('num_paginas', 6)])
-        row3 = sapl.layout.to_row(
-            [('ementa', 12)])
+            [('tipo_materia', 4),
+             ('tipo_protocolo', 4),
+             ('num_paginas', 4)])
         row4 = sapl.layout.to_row(
-            [('autor', 12)])
+            [('ementa', 12)])
         row5 = sapl.layout.to_row(
+            [('autor', 0),
+             (Button('pesquisar',
+                     'Pesquisar Autor',
+                     css_class='btn btn-primary btn-sm'), 2),
+             (Button('limpar',
+                     'limpar Autor',
+                     css_class='btn btn-primary btn-sm'), 2)])
+        row3 = sapl.layout.to_row(
             [('observacao', 12)])
 
         self.helper = FormHelper()
@@ -293,8 +302,30 @@ class ProtocoloMateriaForm(forms.Form):
                      row2,
                      row3,
                      row4,
+                     HTML('''
+                     <div class="col-xs-12">
+                        &nbsp;&nbsp;
+                        <strong>Autor:</strong> <span id="nome_autor"></span>
+                     </div>
+                     '''),
                      row5,
-                     HTML("&nbsp;"),
+                     HTML('''
+                        <div id="modal_autor" title="Selecione o Autor"
+                            align="center">
+                            <form>
+                                <input id="q" type="text" />
+                                <input id="pesquisar"
+                                    type="submit"
+                                    value="Pesquisar"
+                                    class="btn btn-primary"/>
+                            </form>
+                            <div id="div-resultado"></div>
+                            <input type="submit"
+                                   id="selecionar"
+                                   value="Selecionar"
+                                   hidden="true"/>
+                        </div>
+                        '''),
                      form_actions(save_label='Protocolar Matéria')
                      )
         )

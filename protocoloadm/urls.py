@@ -22,7 +22,8 @@ from protocoloadm.views import (AnularProtocoloAdmView,
                                 protocolo_materia_crud,
                                 status_tramitacao_administrativo_crud,
                                 tipo_documento_administrativo_crud,
-                                tramitacao_administrativo_crud)
+                                tramitacao_administrativo_crud,
+                                pesquisa_autores)
 
 urlpatterns = [
     url(r'^protocoloadm/docadm/', include(documento_administrativo_crud.urls)),
@@ -91,4 +92,6 @@ urlpatterns = [
         name='proposicoes_incorporadas'),
     url(r'^proposicoes/(?P<pk>\d+)/proposicao',
         ProposicaoDetailView.as_view(), name='proposicao_view'),
+    url(r'^proposicoes/pesquisar_autores',
+        pesquisa_autores, name='pesquisar_autores')
 ]

@@ -378,6 +378,9 @@ class ProtocoloMateriaView(FormMixin, GenericView):
     template_name = "protocoloadm/protocolar_materia.html"
     model = Protocolo
 
+    def get_success_url(self):
+        return reverse('protocolo')
+
     def get(self, request, *args, **kwargs):
         form = ProtocoloMateriaForm()
         return self.render_to_response({'form': form})
@@ -394,7 +397,7 @@ class ProtocoloMateriaView(FormMixin, GenericView):
             else:
                 numeracao = Protocolo.objects.all().aggregate(Max('numero'))
 
-            if numeracao is None:
+            if numeracao['numero__max'] is None:
                 numeracao['numero__max'] = 0
 
             protocolo = Protocolo()
@@ -758,3 +761,36 @@ class TramitacaoAdmDeleteView(FormMixin, GenericView):
 
         return self.render_to_response({'documento': documento,
                                         'tramitacoes': tramitacoes})
+
+
+def pesquisa_autores(request):
+    import json
+    from django.db.models import Q
+    from django.http import JsonResponse
+    from django.http import HttpResponse
+
+    q = ''
+    if request.method == 'GET':
+        q = request.GET.get('q', '')
+
+    autor = Autor.objects.filter(
+        Q(nome__icontains=q) |
+        Q(parlamentar__nome_parlamentar__icontains=q) |
+        Q(comissao__nome__icontains=q)
+        )
+
+    autores = []
+
+    for a in autor:
+        nome = ''
+        if a.nome:
+            nome = a.nome
+        elif a.parlamentar:
+            nome = a.parlamentar.nome_parlamentar
+        elif a.comissao:
+            nome = a.comissao.nome
+
+        autores.append({'id': a.id, 'nome': nome})
+
+    return HttpResponse(json.dumps(autores, ensure_ascii=False),
+                        content_type="application/json; charset=utf-8")
