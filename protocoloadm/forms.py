@@ -90,12 +90,14 @@ class ProtocoloForm(forms.Form):
         empty_label='Selecione',
     )
 
-    autor = forms.ModelChoiceField(
-        label='Autor',
-        required=False,
-        queryset=Autor.objects.all().order_by('tipo'),
-        empty_label='Selecione',
-    )
+    # autor = forms.ModelChoiceField(
+    #     label='Autor',
+    #     required=False,
+    #     queryset=Autor.objects.all().order_by('tipo'),
+    #     empty_label='Selecione',
+    # )
+
+    autor = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     assunto = forms.CharField(label='Assunto', required=False)
 
@@ -115,17 +117,31 @@ class ProtocoloForm(forms.Form):
              ('tipo_materia', 4)])
 
         row4 = sapl.layout.to_row(
-            [('interessado', 4),
-             ('autor', 4),
-             ('assunto', 4)])
+            [('interessado', 6),
+             ('assunto', 6)])
 
         row5 = sapl.layout.to_row(
+                 [('autor', 0),
+                  (Button('pesquisar',
+                          'Pesquisar Autor',
+                          css_class='btn btn-primary btn-sm'), 2),
+                  (Button('limpar',
+                          'limpar Autor',
+                          css_class='btn btn-primary btn-sm'), 2)])
+
+        row6 = sapl.layout.to_row(
             [('natureza_processo', 12)])
 
         self.helper = FormHelper()
-        self.helper.layout = Layout(row1, row2,
-                                    row3, row4,
-                                    row5, form_actions(save_label='Pesquisar'))
+        self.helper.layout = Layout(Fieldset(
+                                        'Pesquisa de Protocolo',
+                                        row1, row2,
+                                        row3, row4,
+                                        HTML(sapl.utils.autor_label),
+                                        HTML(sapl.utils.autor_modal),
+                                        row5,
+                                        row6,
+                                        form_actions(save_label='Pesquisar')))
         super(ProtocoloForm, self).__init__(
             *args, **kwargs)
 

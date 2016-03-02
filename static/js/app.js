@@ -66,13 +66,8 @@ function autorModal() {
             style="min-width: 90%; max-width:90%;" size="5"/>');
 
           for (i = 0; i < data.length; i++) {
-              //console.debug(data[i]['id'] + '-' + data[i]['nome'])
-              // id = data[i]['id'];
-              // nome = data[i]['nome'];
               id = data[i][0];
               nome = data[i][1];
-
-              console.debug(id + ' ' + nome);
 
               select.append($("<option>").attr('value',id).text(nome));
           }

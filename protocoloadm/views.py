@@ -153,8 +153,6 @@ class ProtocoloPesquisaView(FormMixin, GenericView):
         if form.is_valid():
             kwargs = {}
 
-            # format = '%Y-%m-%d'
-
             if request.POST['tipo_protocolo']:
                 kwargs['tipo_protocolo'] = request.POST['tipo_protocolo']
 
@@ -164,13 +162,13 @@ class ProtocoloPesquisaView(FormMixin, GenericView):
             if request.POST['ano']:
                 kwargs['ano'] = request.POST['ano']
 
-            if request.POST['inicial']:
-                kwargs['data'] = datetime.strptime(
+            if request.POST['inicial'] and request.POST['final']:
+                kwargs['inicial'] = datetime.strptime(
                     request.POST['inicial'],
                     '%d/%m/%Y').strftime('%Y-%m-%d')
-
-            # if request.POST['final']:
-            #     kwargs['final'] = request.POST['final']
+                kwargs['final'] = datetime.strptime(
+                    request.POST['final'],
+                    '%d/%m/%Y').strftime('%Y-%m-%d')
 
             if request.POST['natureza_processo']:
                 kwargs['tipo_protocolo'] = request.POST['natureza_processo']
