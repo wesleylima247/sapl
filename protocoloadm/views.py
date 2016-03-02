@@ -109,8 +109,46 @@ class ProtocoloListView(FormMixin, ListView):
 
     def get_queryset(self):
         kwargs = self.request.session['kwargs']
-        return Protocolo.objects.filter(
-            **kwargs)
+        protocolos = Protocolo.objects.all().order_by('numero', 'ano')
+
+        if 'inicial' and 'final' in kwargs:
+            protocolos = protocolos.filter(
+                data__range=(kwargs['inicial'], kwargs['final']))
+
+        if 'numero' in kwargs:
+            protocolos = protocolos.filter(numero=kwargs['numero'])
+
+        if 'ano' in kwargs:
+            protocolos = protocolos.filter(ano=kwargs['ano'])
+
+        if 'tipo_documento' in kwargs:
+            protocolos = protocolos.filter(
+                tipo_documento=kwargs['tipo_documento'])
+
+        if 'interessado' in kwargs:
+            protocolos = protocolos.filter(
+                interessado__icontains=kwargs['interessado'])
+
+        if 'tipo_materia' in kwargs:
+            protocolos = protocolos.filter(
+                tipo_materia=kwargs['tipo_materia'])
+
+        if 'autor' in kwargs:
+            protocolos = protocolos.filter(autor=kwargs['autor'])
+
+        if 'assunto' in kwargs:
+            protocolos = protocolos.filter(
+                assunto_ementa__icontains=kwargs['assunto'])
+
+        if 'tipo_protocolo' in kwargs:
+            protocolos = protocolos.filter(
+                tipo_protocolo=kwargs['tipo_protocolo'])
+
+        if 'natureza_processo' in kwargs:
+            protocolos = protocolos.filter(
+                tipo_processo=kwargs['natureza_processo'])
+
+        return protocolos
 
     def get_context_data(self, **kwargs):
         context = super(ProtocoloListView, self).get_context_data(
@@ -171,7 +209,7 @@ class ProtocoloPesquisaView(FormMixin, GenericView):
                     '%d/%m/%Y').strftime('%Y-%m-%d')
 
             if request.POST['natureza_processo']:
-                kwargs['tipo_protocolo'] = request.POST['natureza_processo']
+                kwargs['natureza_processo'] = request.POST['natureza_processo']
 
             if request.POST['tipo_documento']:
                 kwargs['tipo_documento'] = request.POST['tipo_documento']

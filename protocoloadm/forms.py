@@ -26,7 +26,8 @@ def tramitacao():
             (False, 'Não')]
 
 
-TIPOS_PROTOCOLO = [('0', 'Enviado'),
+TIPOS_PROTOCOLO = [('', 'Ambos'),
+                   ('0', 'Enviado'),
                    ('1', 'Recebido')]
 
 
@@ -48,6 +49,7 @@ class ProtocoloForm(forms.Form):
 
     numero_protocolo = forms.CharField(
         label='Número de Protocolo', required=False)
+
     ano = forms.ChoiceField(required=False,
                             label='Ano',
                             choices=YEARS,
@@ -68,11 +70,7 @@ class ProtocoloForm(forms.Form):
                                           choices=[
                                               ('0', 'Administrativo'),
                                               ('1', 'Legislativo'),
-                                              ('', 'Ambos')],
-                                          # widget=forms.RadioSelect(
-                                          #     renderer=HorizontalRadioRenderer)
-
-                                          )
+                                              ('', 'Ambos')])
 
     tipo_documento = forms.ModelChoiceField(
         label='Tipo de Documento',
@@ -89,13 +87,6 @@ class ProtocoloForm(forms.Form):
         queryset=TipoMateriaLegislativa.objects.all(),
         empty_label='Selecione',
     )
-
-    # autor = forms.ModelChoiceField(
-    #     label='Autor',
-    #     required=False,
-    #     queryset=Autor.objects.all().order_by('tipo'),
-    #     empty_label='Selecione',
-    # )
 
     autor = forms.CharField(widget=forms.HiddenInput(), required=False)
 
