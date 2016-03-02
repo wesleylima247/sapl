@@ -1,7 +1,7 @@
 from datetime import date
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit, Button
+from crispy_forms.layout import HTML, Button, Field, Fieldset, Layout, Submit
 from django import forms
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
@@ -260,15 +260,7 @@ class ProtocoloMateriaForm(forms.Form):
     ementa = forms.CharField(
         widget=forms.Textarea, label='Ementa', required=True)
 
-    # autor = forms.ModelChoiceField(
-    #     label='Autor',
-    #     required=False,
-    #     queryset=Autor.objects.all().order_by('tipo'),
-    #     empty_label='Selecione',
-    # )
-
     autor = forms.CharField(widget=forms.HiddenInput(), required=False)
-    # autor_nome = forms.CharField(label='Autor', required=False)
 
     observacao = forms.CharField(required=True,
                                  widget=forms.Textarea,
@@ -282,9 +274,7 @@ class ProtocoloMateriaForm(forms.Form):
             [('tipo_materia', 4),
              ('tipo_protocolo', 4),
              ('num_paginas', 4)])
-        row4 = sapl.layout.to_row(
-            [('ementa', 12)])
-        row5 = sapl.layout.to_row(
+        row3 = sapl.layout.to_row(
             [('autor', 0),
              (Button('pesquisar',
                      'Pesquisar Autor',
@@ -292,40 +282,21 @@ class ProtocoloMateriaForm(forms.Form):
              (Button('limpar',
                      'limpar Autor',
                      css_class='btn btn-primary btn-sm'), 2)])
-        row3 = sapl.layout.to_row(
+        row4 = sapl.layout.to_row(
             [('observacao', 12)])
+        row5 = sapl.layout.to_row(
+            [('ementa', 12)])
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset('Protocolo - Opção de Numeração', row1),
             Fieldset('Identificação da Matéria',
                      row2,
+                     HTML(sapl.utils.autor_label),
+                     HTML(sapl.utils.autor_modal),
                      row3,
                      row4,
-                     HTML('''
-                     <div class="col-xs-12">
-                        &nbsp;&nbsp;
-                        <strong>Autor:</strong> <span id="nome_autor"></span>
-                     </div>
-                     '''),
                      row5,
-                     HTML('''
-                        <div id="modal_autor" title="Selecione o Autor"
-                            align="center">
-                            <form>
-                                <input id="q" type="text" />
-                                <input id="pesquisar"
-                                    type="submit"
-                                    value="Pesquisar"
-                                    class="btn btn-primary"/>
-                            </form>
-                            <div id="div-resultado"></div>
-                            <input type="submit"
-                                   id="selecionar"
-                                   value="Selecionar"
-                                   hidden="true"/>
-                        </div>
-                        '''),
                      form_actions(save_label='Protocolar Matéria')
                      )
         )

@@ -18,12 +18,11 @@ from protocoloadm.views import (AnularProtocoloAdmView,
                                 TramitacaoAdmIncluirView, TramitacaoAdmView,
                                 documento_acessorio_administrativo_crud,
                                 documento_administrativo_crud,
-                                protocolo_documento_crud,
+                                pesquisa_autores, protocolo_documento_crud,
                                 protocolo_materia_crud,
                                 status_tramitacao_administrativo_crud,
                                 tipo_documento_administrativo_crud,
-                                tramitacao_administrativo_crud,
-                                pesquisa_autores)
+                                tramitacao_administrativo_crud)
 
 urlpatterns = [
     url(r'^protocoloadm/docadm/', include(documento_administrativo_crud.urls)),

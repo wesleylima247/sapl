@@ -1,11 +1,12 @@
+import json
 from datetime import date, datetime
 from re import sub
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db.models import Max
-from django.http import HttpResponseRedirect
+from django.db.models import Q, Max
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
@@ -409,10 +410,13 @@ class ProtocoloMateriaView(FormMixin, GenericView):
             protocolo.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
             protocolo.tipo_protocolo = request.POST['tipo_protocolo']
             protocolo.tipo_processo = '0'  # TODO validar o significado
-            protocolo.autor = Autor.objects.get(id=request.POST['autor'])
+            if form.cleaned_data['autor']:
+                protocolo.autor = Autor.objects.get(
+                                    id=int(form.cleaned_data['autor']))
             protocolo.anulado = False
-            protocolo.tipo_materia = TipoMateriaLegislativa.objects.get(
-                id=request.POST['tipo_materia'])
+            if form.cleaned_data['tipo_materia']:
+                protocolo.tipo_materia = TipoMateriaLegislativa.objects.get(
+                    id=int(form.cleaned_data['tipo_materia']))
             protocolo.numero_paginas = request.POST['num_paginas']
             protocolo.observacao = sub(
                 '&nbsp;', ' ', strip_tags(request.POST['observacao']))
@@ -764,11 +768,6 @@ class TramitacaoAdmDeleteView(FormMixin, GenericView):
 
 
 def pesquisa_autores(request):
-    import json
-    from django.db.models import Q
-    from django.http import JsonResponse
-    from django.http import HttpResponse
-
     q = ''
     if request.method == 'GET':
         q = request.GET.get('q', '')
@@ -790,7 +789,11 @@ def pesquisa_autores(request):
         elif a.comissao:
             nome = a.comissao.nome
 
-        autores.append({'id': a.id, 'nome': nome})
+        autores.append((a.id, nome))
 
-    return HttpResponse(json.dumps(autores, ensure_ascii=False),
+    autores = sorted(autores, key=lambda x: x[1])
+
+    return HttpResponse(json.dumps(autores,
+                                   sort_keys=True,
+                                   ensure_ascii=False),
                         content_type="application/json; charset=utf-8")
