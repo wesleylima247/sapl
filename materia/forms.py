@@ -1,7 +1,7 @@
 from datetime import date
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Column, Fieldset, Layout
+from crispy_forms.layout import Column, Fieldset, Layout, Button, HTML
 from django import forms
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
@@ -635,54 +635,9 @@ class AutoriaForm(forms.Form):
         empty_label='Selecione')
 
 
-class MateriaLegislativaPesquisaForm(forms.Form):
+class MateriaLegislativaPesquisaForm(ModelForm):
 
-    autor = forms.ModelChoiceField(
-        label='Autor',
-        required=False,
-        queryset=Autor.objects.all().order_by('tipo'),
-        empty_label='Selecione',
-    )
-
-    # relatores são os parlamentares ativos?
-    relator = forms.ModelChoiceField(
-        label='Relator',
-        required=False,
-        queryset=Parlamentar.objects.all().order_by('nome_parlamentar'),
-        empty_label='Selecione',
-    )
-
-    tipo = forms.ModelChoiceField(
-        label='Tipo de Matéria',
-        required=False,
-        queryset=TipoMateriaLegislativa.objects.all(),
-        empty_label='Selecione',
-    )
-
-    data_apresentacao = forms.DateField(label=u'Data de Apresentação',
-                                        input_formats=['%d/%m/%Y'],
-                                        required=False,
-                                        widget=forms.DateInput(
-                                            format='%d/%m/%Y',
-                                            attrs={'class': 'dateinput'}))
-
-    data_publicacao = forms.DateField(label=u'Data da Publicação',
-                                      input_formats=['%d/%m/%Y'],
-                                      required=False,
-                                      widget=forms.DateInput(
-                                          format='%d/%m/%Y',
-                                          attrs={'class': 'dateinput'}))
-
-    numero = forms.CharField(required=False, label=u'Número da Matéria')
-    numero_protocolo = forms.CharField(required=False, label=u'Núm. Protocolo')
-    ano = forms.CharField(required=False, label=u'Ano da Matéria')
-    assunto = forms.CharField(required=False, label=u'Assunto')
-
-    ordem = forms.ChoiceField(required=False,
-                              label='Ordenação',
-                              choices=ordenacao_materias(),
-                              widget=forms.Select(
-                                       attrs={'class': 'selector'}))
+    autor = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     localizacao = forms.ModelChoiceField(
         label='Localização Atual',
@@ -698,36 +653,57 @@ class MateriaLegislativaPesquisaForm(forms.Form):
         empty_label='Selecione',
     )
 
-    tramitacao = forms.ChoiceField(required=False,
-                                   label='Tramitando',
-                                   choices=em_tramitacao(),
-                                   widget=forms.Select(
-                                       attrs={'class': 'selector'}))
+    em_tramitacao = forms.ChoiceField(required=False,
+                                      label='Tramitando',
+                                      choices=em_tramitacao(),
+                                      widget=forms.Select(
+                                        attrs={'class': 'selector'}))
 
-    tipo_autor = forms.ModelChoiceField(
-        label='Tipo Autor',
-        required=False,
-        queryset=TipoAutor.objects.all(),
-        empty_label='Selecione',
-    )
+    publicacao_inicial = forms.DateField(label=u'Data Publicação Inicial',
+                                         input_formats=['%d/%m/%Y'],
+                                         required=False,
+                                         widget=forms.DateInput(
+                                            format='%d/%m/%Y',
+                                            attrs={'class': 'dateinput'}))
 
-    partido_autor = forms.ModelChoiceField(
-        label='Partido (Autor)',
-        required=False,
-        queryset=Partido.objects.all(),
-        empty_label='Selecione')
+    publicacao_final = forms.DateField(label=u'Data Publicação Final',
+                                       input_formats=['%d/%m/%Y'],
+                                       required=False,
+                                       widget=forms.DateInput(
+                                            format='%d/%m/%Y',
+                                            attrs={'class': 'dateinput'}))
 
-    local_origem_externa = forms.ModelChoiceField(
-        label='Localização de Origem',
-        required=False,
-        queryset=Origem.objects.all(),
-        empty_label='Selecione')
+    apresentacao_inicial = forms.DateField(label=u'Data Apresentação Inicial',
+                                           input_formats=['%d/%m/%Y'],
+                                           required=False,
+                                           widget=forms.DateInput(
+                                            format='%d/%m/%Y',
+                                            attrs={'class': 'dateinput'}))
 
-    # TODO: Verificar se esses campos estão corretos
-    # assunto? # -> usado 'ementa' em 'assunto'
-    # localizacao atual? #
-    # situacao? #
-    # tramitando? #
+    apresentacao_final = forms.DateField(label=u'Data Apresentação Final',
+                                         input_formats=['%d/%m/%Y'],
+                                         required=False,
+                                         widget=forms.DateInput(
+                                            format='%d/%m/%Y',
+                                            attrs={'class': 'dateinput'}))
+
+    class Meta:
+        model = MateriaLegislativa
+        fields = [
+                  'tipo',
+                  'numero',
+                  'ano',
+                  'numero_protocolo',
+                  'apresentacao_inicial',
+                  'apresentacao_final',
+                  'publicacao_inicial',
+                  'publicacao_final',
+                  'autor',
+                  'local_origem_externa',
+                  'localizacao',
+                  'em_tramitacao',
+                  'situacao',
+                 ]
 
     def __init__(self, *args, **kwargs):
 
@@ -738,29 +714,34 @@ class MateriaLegislativaPesquisaForm(forms.Form):
              ('ano', 4),
              ('numero_protocolo', 4)])
         row3 = sapl.layout.to_row(
-            [('data_apresentacao', 6),
-             ('data_publicacao', 6)])
+            [('apresentacao_inicial', 6),
+             ('apresentacao_final', 6)])
         row4 = sapl.layout.to_row(
-            [('autor', 6),
-             ('partido_autor', 6)])
+            [('publicacao_inicial', 6),
+             ('publicacao_final', 6)])
         row5 = sapl.layout.to_row(
-            [('tipo_autor', 6),
-             ('relator', 6)])
+                 [('autor', 0),
+                  (Button('pesquisar',
+                          'Pesquisar Autor',
+                          css_class='btn btn-primary btn-sm'), 2),
+                  (Button('limpar',
+                          'limpar Autor',
+                          css_class='btn btn-primary btn-sm'), 10)])
         row6 = sapl.layout.to_row(
             [('local_origem_externa', 6),
              ('localizacao', 6)])
         row7 = sapl.layout.to_row(
-            [('tramitacao', 4),
-             ('situacao', 4),
-             ('ordem', 4)])
-        row8 = sapl.layout.to_row(
-            [('assunto', 12)])
+            [('em_tramitacao', 6),
+             ('situacao', 6)])
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset('Pesquisa Básica',
-                     row1, row2, row3, row4, row5, row6, row7, row8),
-            form_actions(save_label='Pesquisar')
+                     row1, row2, row3, row4,
+                     HTML(sapl.utils.autor_label),
+                     HTML(sapl.utils.autor_modal),
+                     row5, row6, row7,
+                     form_actions(save_label='Pesquisar'))
         )
         super(MateriaLegislativaPesquisaForm, self).__init__(
             *args, **kwargs)
