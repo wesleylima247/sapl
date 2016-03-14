@@ -30,9 +30,9 @@ urlpatterns = [
                               materia_legislativa_crud.namespace)),
 
 
-    url(r'^materia/(?P<pk>[0-9]+)/ta$',
+    url(r'^materia/(?P<pk>\d+)/ta$',
         MateriaTaView.as_view(), name='materia_ta'),
-    url(r'^materia/proposicao/(?P<pk>[0-9]+)/ta$',
+    url(r'^materia/proposicao/(?P<pk>\d+)/ta$',
         ProposicaoTaView.as_view(), name='proposicao_ta'),
 
 

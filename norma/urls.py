@@ -7,7 +7,7 @@ from norma.views import (NormaEditView, NormaIncluirView, NormaPesquisaView,
 
 # norma_url_patterns = norma_crud.urlpatterns + []
 norma_url_patterns = norma_temporario_crud.urlpatterns + [
-    url(r'^norma/(?P<pk>[0-9]+)/ta$',
+    url(r'^norma/(?P<pk>\d+)/ta$',
         NormaTaView.as_view(), name='ta')
 ]
 
@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^sistema/norma/assunto/', include(assunto_norma_crud.urls)),
 
     url(r'^norma/incluir$', NormaIncluirView.as_view(), name='norma_incluir'),
-    url(r'^norma/(?P<pk>[0-9]+)/editar$',
+    url(r'^norma/(?P<pk>\d+)/editar$',
         NormaEditView.as_view(), name='norma_editar'),
     url(r'^norma/pesquisa$',
         NormaPesquisaView.as_view(), name='norma_pesquisa'),
