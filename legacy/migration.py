@@ -9,6 +9,7 @@ from django.db import connections, models
 from django.db.models.base import ModelBase
 from model_mommy import mommy
 
+from base.models import ProblemaMigracao
 from comissoes.models import Composicao, Participacao
 from parlamentares.models import Parlamentar
 from sessao.models import SessaoPlenaria
@@ -27,7 +28,13 @@ appconfs = [apps.get_app_config(n) for n in [
 
 stubs_list = []
 unique_constraints = []
-stub_created = False
+migration_problems = {
+    'content_object': None,
+    'problema': None,
+    'descricao': None,
+    'endereco': None,
+}
+stub_created = None
 name_sets = [set(m.__name__ for m in ac.get_models()) for ac in appconfs]
 
 # apps do not overlap
@@ -263,6 +270,7 @@ class DataMigrator:
         # warning: model/app migration order is of utmost importance
 
         self.to_delete = []
+        ProblemaMigracao.objects.all().delete()
         info('Starting %s migration...' % obj)
         self._do_migrate(obj)
         # exclude logically deleted in legacy base
