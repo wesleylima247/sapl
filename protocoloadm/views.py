@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import CreateView, DetailView, FormView, ListView
 from django.views.generic.base import TemplateView
-
+import crud.base
 from crud.base import Crud, make_pagination
 from materia.models import Proposicao, TipoMateriaLegislativa
 from sapl.utils import create_barcode, get_client_ip
@@ -35,6 +35,21 @@ ProtocoloDocumentoCrud = Crud.build(Protocolo, '')
 
 # FIXME precisa de uma chave diferente para o layout
 ProtocoloMateriaCrud = Crud.build(Protocolo, '')
+
+
+class ProtocoloDocumentoCrud(Crud):
+    model = Protocolo
+    help_path = 'protocolar_documento'
+
+    class CreateView(crud.base.CrudCreateView):
+        form_class = ProtocoloDocumentForm
+
+        def get_success_url(self):
+            return reverse_lazy('protocoloadm:protocolo')
+
+        @property
+        def layout_key(self):
+            return 'ProtocolarDocumento'
 
 
 class ProtocoloPesquisaView(FormView):
@@ -139,36 +154,36 @@ class AnularProtocoloAdmView(CreateView):
         return redirect(self.get_success_url())
 
 
-class ProtocoloDocumentoView(FormValidMessageMixin, CreateView):
-    template_name = "protocoloadm/protocolar_documento.html"
-    form_class = ProtocoloDocumentForm
-    form_valid_message = _('Protocolo cadastrado com sucesso!')
-
-    def get_success_url(self):
-        return reverse('protocoloadm:protocolo')
-
-    def form_valid(self, form):
-        f = form.save(commit=False)
-
-        if form.cleaned_data['numeracao'] == '1':
-            numeracao = Protocolo.objects.filter(
-                ano=date.today().year).aggregate(Max('numero'))
-        elif form.cleaned_data['numeracao'] == '2':
-            numeracao = Protocolo.objects.all().aggregate(Max('numero'))
-
-        if numeracao['numero__max'] is None:
-            numeracao['numero__max'] = 0
-
-        f.tipo_processo = '0'  # TODO validar o significado
-        f.anulado = False
-        f.numero = numeracao['numero__max'] + 1
-        f.ano = datetime.now().year
-        f.data = datetime.now().strftime('%Y-%m-%d')
-        f.hora = datetime.now().strftime('%H:%M')
-        f.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-        f.save()
-        return redirect(self.get_success_url())
+# class ProtocoloDocumentoView(FormValidMessageMixin, CreateView):
+#     template_name = "protocoloadm/protocolar_documento.html"
+#     form_class = ProtocoloDocumentForm
+#     form_valid_message = _('Protocolo cadastrado com sucesso!')
+#
+#     def get_success_url(self):
+#         return reverse('protocoloadm:protocolo')
+#
+#     def form_valid(self, form):
+#         f = form.save(commit=False)
+#
+#         if form.cleaned_data['numeracao'] == '1':
+#             numeracao = Protocolo.objects.filter(
+#                 ano=date.today().year).aggregate(Max('numero'))
+#         elif form.cleaned_data['numeracao'] == '2':
+#             numeracao = Protocolo.objects.all().aggregate(Max('numero'))
+#
+#         if numeracao['numero__max'] is None:
+#             numeracao['numero__max'] = 0
+#
+#         f.tipo_processo = '0'  # TODO validar o significado
+#         f.anulado = False
+#         f.numero = numeracao['numero__max'] + 1
+#         f.ano = datetime.now().year
+#         f.data = datetime.now().strftime('%Y-%m-%d')
+#         f.hora = datetime.now().strftime('%H:%M')
+#         f.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+#
+#         f.save()
+#         return redirect(self.get_success_url())
 
 
 class CriarDocumentoProtocolo(CreateView):

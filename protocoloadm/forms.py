@@ -1,10 +1,11 @@
-from datetime import date
+from datetime import date, datetime
 
 from crispy_forms.bootstrap import InlineRadios
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Button, Field, Fieldset, Layout, Submit
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 
@@ -213,65 +214,38 @@ class ProtocoloDocumentForm(ModelForm):
                                        label=_('Tipo de Protocolo'),
                                        choices=TIPOS_PROTOCOLO,)
 
-    tipo_documento = forms.ModelChoiceField(
-        label=_('Tipo de Documento'),
-        required=False,
-        queryset=TipoDocumentoAdministrativo.objects.all(),
-        empty_label='Selecione',
-    )
-
-    num_paginas = forms.CharField(label=_('Núm. Páginas'), required=True)
-    assunto = forms.CharField(
-        widget=forms.Textarea, label='Assunto', required=True)
-
-    interessado = forms.CharField(required=True,
-                                  label='Interessado')
-
-    observacao = forms.CharField(required=True,
-                                 widget=forms.Textarea, label='Observação')
-
     class Meta:
         model = Protocolo
         fields = ['numeracao',
                   'tipo_protocolo',
                   'tipo_documento',
-                  'num_paginas',
-                  'assunto',
+                  'numero_paginas',
+                  'assunto_ementa',
                   'interessado',
-                  'observacao',
-                  ]
+                  'observacao']
 
-    def __init__(self, *args, **kwargs):
+    def save(self, commit=False):
+        p = super(ProtocoloDocumentForm, self).save(commit)
 
-        row1 = crispy_layout_mixin.to_row(
-            [(InlineRadios('numeracao'), 12)])
-        row2 = crispy_layout_mixin.to_row(
-            [(InlineRadios('tipo_protocolo'), 12)])
-        row3 = crispy_layout_mixin.to_row(
-            [('tipo_documento', 6),
-             ('num_paginas', 6)])
-        row4 = crispy_layout_mixin.to_row(
-            [('assunto', 12)])
-        row5 = crispy_layout_mixin.to_row(
-            [('interessado', 12)])
-        row6 = crispy_layout_mixin.to_row(
-            [('observacao', 12)])
+        if self.cleaned_data['numeracao'] == '1':
+            numeracao = Protocolo.objects.filter(
+                ano=date.today().year).aggregate(Max('numero'))
+        elif self.cleaned_data['numeracao'] == '2':
+            numeracao = Protocolo.objects.all().aggregate(Max('numero'))
 
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Fieldset(_('Protocolo - Opção de Numeração'), row1),
-            Fieldset(_('Identificação de Documento'),
-                     row2,
-                     row3,
-                     row4,
-                     row5,
-                     row6,
-                     HTML("&nbsp;"),
-                     form_actions(save_label=_('Protocolar Documento'))
-                     )
-        )
-        super(ProtocoloDocumentForm, self).__init__(
-            *args, **kwargs)
+        if numeracao['numero__max'] is None:
+            numeracao['numero__max'] = 0
+
+        p.tipo_processo = '0'  # TODO validar o significado
+        p.anulado = False
+        p.numero = numeracao['numero__max'] + 1
+        p.ano = datetime.now().year
+        p.data = datetime.now().strftime('%Y-%m-%d')
+        p.hora = datetime.now().strftime('%H:%M')
+        p.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        p.save()
+        return p
 
 
 class ProtocoloMateriaForm(ModelForm):
