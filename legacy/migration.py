@@ -364,7 +364,7 @@ class DataMigrator:
 
     def delete_stubs(self):
         excluidos = 0
-        for obj in ProblemaMigracao.objects.all():
+        for obj in ProblemaMigracao.objects.all().reverse():
             if obj.content_object:
                 original = obj.content_type.get_all_objects_for_this_type(
                         id=obj.object_id)
@@ -445,8 +445,6 @@ def check_app_no_ind_excluido(app):
 
 
 def make_with_log(model, _quantity=None, make_m2m=False, **attrs):
-    import ipdb; ipdb.set_trace()
-    all_fields = model._meta.get_fields()
     fields_dict = get_fields_dict(model)
     stub = make(model, _quantity, make_m2m, **fields_dict)
     problema = 'Um stub foi necessário durante a criação de um outro stub'
