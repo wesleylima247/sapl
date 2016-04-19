@@ -364,7 +364,7 @@ class DataMigrator:
 
     def delete_stubs(self):
         excluidos = 0
-        for obj in ProblemaMigracao.objects.all().reverse():
+        for obj in ProblemaMigracao.objects.all():
             if obj.content_object:
                 original = obj.content_type.get_all_objects_for_this_type(
                         id=obj.object_id)
