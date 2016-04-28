@@ -7,11 +7,10 @@ from django.apps.config import AppConfig
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import connections, models
-from django.db.models import CharField, ForeignKey, TextField
+from django.db.models import CharField, TextField
 from django.db.models.base import ModelBase
-
 from model_mommy import mommy
-from model_mommy.mommy import make, foreign_key_required
+from model_mommy.mommy import foreign_key_required, make
 
 from base.models import ProblemaMigracao
 from comissoes.models import Composicao, Participacao
