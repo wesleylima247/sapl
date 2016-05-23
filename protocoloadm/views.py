@@ -2,6 +2,7 @@ import json
 from datetime import date, datetime
 
 from braces.views import FormValidMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Max, Q
@@ -50,7 +51,7 @@ class StatusTramitacaoAdministrativoCrud(Crud):
         ordering = 'sigla'
 
 
-class ProtocoloPesquisaView(FilterView):
+class ProtocoloPesquisaView(LoginRequiredMixin, FilterView):
     model = Protocolo
     filterset_class = ProtocoloFilterSet
     paginate_by = 10
@@ -109,7 +110,7 @@ class ProtocoloPesquisaView(FilterView):
         return self.render_to_response(context)
 
 
-class ProtocoloListView(ListView):
+class ProtocoloListView(LoginRequiredMixin, ListView):
     template_name = 'protocoloadm/protocolo_list.html'
     context_object_name = 'protocolos'
     model = Protocolo
@@ -132,7 +133,7 @@ class ProtocoloListView(ListView):
         return context
 
 
-class AnularProtocoloAdmView(CreateView):
+class AnularProtocoloAdmView(LoginRequiredMixin, CreateView):
     template_name = 'protocoloadm/anular_protocoloadm.html'
     form_class = AnularProcoloAdmForm
     form_valid_message = _('Protocolo anulado com sucesso!')
@@ -158,7 +159,9 @@ class AnularProtocoloAdmView(CreateView):
         return redirect(self.get_success_url())
 
 
-class ProtocoloDocumentoView(FormValidMessageMixin, CreateView):
+class ProtocoloDocumentoView(LoginRequiredMixin,
+                             FormValidMessageMixin,
+                             CreateView):
     template_name = "protocoloadm/protocolar_documento.html"
     form_class = ProtocoloDocumentForm
     form_valid_message = _('Protocolo cadastrado com sucesso!')
@@ -190,7 +193,7 @@ class ProtocoloDocumentoView(FormValidMessageMixin, CreateView):
         return redirect(self.get_success_url())
 
 
-class CriarDocumentoProtocolo(CreateView):
+class CriarDocumentoProtocolo(LoginRequiredMixin, CreateView):
     template_name = "protocoloadm/criar_documento.html"
     form_class = DocumentoAdministrativoForm
 
@@ -227,7 +230,7 @@ class CriarDocumentoProtocolo(CreateView):
         return doc
 
 
-class ProtocoloMostrarView(TemplateView):
+class ProtocoloMostrarView(LoginRequiredMixin, TemplateView):
 
     template_name = "protocoloadm/protocolo_mostrar.html"
 
@@ -240,7 +243,7 @@ class ProtocoloMostrarView(TemplateView):
         return context
 
 
-class ComprovanteProtocoloView(TemplateView):
+class ComprovanteProtocoloView(LoginRequiredMixin, TemplateView):
 
     template_name = "protocoloadm/comprovante.html"
 
@@ -268,7 +271,7 @@ class ComprovanteProtocoloView(TemplateView):
         return context
 
 
-class ProtocoloMateriaView(CreateView):
+class ProtocoloMateriaView(LoginRequiredMixin, CreateView):
 
     template_name = "protocoloadm/protocolar_materia.html"
     form_class = ProtocoloMateriaForm
@@ -308,11 +311,11 @@ class ProtocoloMateriaView(CreateView):
 
 
 # TODO: move to Proposicao app
-class ProposicaoReceberView(TemplateView):
+class ProposicaoReceberView(LoginRequiredMixin, TemplateView):
     template_name = "protocoloadm/proposicao_receber.html"
 
 
-class ProposicoesNaoRecebidasView(ListView):
+class ProposicoesNaoRecebidasView(LoginRequiredMixin, ListView):
     template_name = "protocoloadm/proposicao_naorecebidas.html"
     model = Proposicao
     paginate_by = 10
@@ -321,7 +324,7 @@ class ProposicoesNaoRecebidasView(ListView):
         return Proposicao.objects.filter(data_envio__isnull=False, status='E')
 
 
-class ProposicoesNaoIncorporadasView(ListView):
+class ProposicoesNaoIncorporadasView(LoginRequiredMixin, ListView):
     template_name = "protocoloadm/proposicao_naoincorporadas.html"
     model = Proposicao
     paginate_by = 10
@@ -332,7 +335,7 @@ class ProposicoesNaoIncorporadasView(ListView):
                                          status='D')
 
 
-class ProposicoesIncorporadasView(ListView):
+class ProposicoesIncorporadasView(LoginRequiredMixin, ListView):
     template_name = "protocoloadm/proposicao_incorporadas.html"
     model = Proposicao
     paginate_by = 10
@@ -343,11 +346,11 @@ class ProposicoesIncorporadasView(ListView):
                                          status='I')
 
 
-class ProposicaoView(TemplateView):
+class ProposicaoView(LoginRequiredMixin, TemplateView):
     template_name = "protocoloadm/proposicoes.html"
 
 
-class ProposicaoDetailView(DetailView):
+class ProposicaoDetailView(LoginRequiredMixin, DetailView):
     template_name = "protocoloadm/proposicao_view.html"
     model = Proposicao
 
@@ -369,7 +372,7 @@ class ProposicaoDetailView(DetailView):
         return context
 
 
-class PesquisarDocumentoAdministrativoView(FilterView):
+class PesquisarDocumentoAdministrativoView(LoginRequiredMixin, FilterView):
     model = DocumentoAdministrativo
     filterset_class = DocumentoAdministrativoFilterSet
     paginate_by = 10
@@ -428,7 +431,7 @@ class PesquisarDocumentoAdministrativoView(FilterView):
         return self.render_to_response(context)
 
 
-class DetailDocumentoAdministrativo(DetailView):
+class DetailDocumentoAdministrativo(LoginRequiredMixin, DetailView):
     template_name = "protocoloadm/detail_doc_adm.html"
 
     def get(self, request, *args, **kwargs):
@@ -468,7 +471,7 @@ class DetailDocumentoAdministrativo(DetailView):
             'pk': self.kwargs['pk']})
 
 
-class DocumentoAcessorioAdministrativoEditView(FormView):
+class DocumentoAcessorioAdministrativoEditView(LoginRequiredMixin, FormView):
     template_name = "protocoloadm/documento_acessorio_administrativo_edit.html"
 
     def get(self, request, *args, **kwargs):
@@ -515,7 +518,7 @@ class DocumentoAcessorioAdministrativoEditView(FormView):
         return reverse('protocoloadm:doc_ace_adm', kwargs={'pk': pk})
 
 
-class DocumentoAcessorioAdministrativoView(FormView):
+class DocumentoAcessorioAdministrativoView(LoginRequiredMixin, FormView):
     template_name = "protocoloadm/documento_acessorio_administrativo.html"
 
     def get(self, request, *args, **kwargs):
@@ -554,7 +557,7 @@ class DocumentoAcessorioAdministrativoView(FormView):
         return reverse('protocoloadm:doc_ace_adm', kwargs={'pk': pk})
 
 
-class TramitacaoAdmView(FormView):
+class TramitacaoAdmView(LoginRequiredMixin, FormView):
     template_name = "protocoloadm/tramitacao.html"
 
     def get(self, request, *args, **kwargs):
@@ -568,7 +571,7 @@ class TramitacaoAdmView(FormView):
                                         'tramitacoes': tramitacoes})
 
 
-class TramitacaoAdmIncluirView(FormView):
+class TramitacaoAdmIncluirView(LoginRequiredMixin, FormView):
     template_name = "protocoloadm/tramitacao_incluir.html"
 
     def get(self, request, *args, **kwargs):
@@ -593,7 +596,7 @@ class TramitacaoAdmIncluirView(FormView):
             return self.form_invalid(form)
 
 
-class TramitacaoAdmEditView(FormView):
+class TramitacaoAdmEditView(LoginRequiredMixin, FormView):
 
     template_name = "protocoloadm/tramitacao_edit.html"
 
@@ -621,7 +624,7 @@ class TramitacaoAdmEditView(FormView):
             return self.form_invalid(form)
 
 
-class TramitacaoAdmDeleteView(DetailView):
+class TramitacaoAdmDeleteView(LoginRequiredMixin, DetailView):
 
     template_name = "protocoloadm/tramitacao.html"
 

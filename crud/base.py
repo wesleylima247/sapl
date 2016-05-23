@@ -1,5 +1,6 @@
 from braces.views import FormMessagesMixin
 from django.conf.urls import url
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse
 from django.utils.decorators import classonlymethod
 from django.utils.translation import ugettext_lazy as _
@@ -102,7 +103,7 @@ class CrudBaseMixin(CrispyLayoutFormMixin):
         return self.model._meta.verbose_name_plural
 
 
-class CrudListView(ListView):
+class CrudListView(LoginRequiredMixin, ListView):
 
     @classmethod
     def get_url_regex(cls):
@@ -145,7 +146,7 @@ class CrudListView(ListView):
         return context
 
 
-class CrudCreateView(FormMessagesMixin, CreateView):
+class CrudCreateView(LoginRequiredMixin, FormMessagesMixin, CreateView):
 
     @classmethod
     def get_url_regex(cls):
@@ -166,14 +167,14 @@ class CrudCreateView(FormMessagesMixin, CreateView):
         return super(CrudCreateView, self).get_context_data(**kwargs)
 
 
-class CrudDetailView(DetailView):
+class CrudDetailView(LoginRequiredMixin, DetailView):
 
     @classmethod
     def get_url_regex(cls):
         return r'^(?P<pk>\d+)$'
 
 
-class CrudUpdateView(FormMessagesMixin, UpdateView):
+class CrudUpdateView(LoginRequiredMixin, FormMessagesMixin, UpdateView):
 
     @classmethod
     def get_url_regex(cls):
@@ -189,7 +190,7 @@ class CrudUpdateView(FormMessagesMixin, UpdateView):
         return self.detail_url
 
 
-class CrudDeleteView(FormMessagesMixin, DeleteView):
+class CrudDeleteView(LoginRequiredMixin, FormMessagesMixin, DeleteView):
 
     @classmethod
     def get_url_regex(cls):

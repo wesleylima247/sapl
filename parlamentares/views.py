@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import redirect
 from django.utils.datastructures import MultiValueDictKeyError
@@ -162,7 +163,7 @@ class ParlamentarCrud(Crud):
             return context
 
 
-class MesaDiretoraView(FormView):
+class MesaDiretoraView(LoginRequiredMixin, FormView):
     template_name = "mesa_diretora/mesa_diretora.html"
     success_url = reverse_lazy('parlamentares:mesa_diretora')
 

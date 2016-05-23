@@ -1,6 +1,8 @@
 from datetime import datetime
 from re import sub
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
@@ -46,11 +48,10 @@ CargoBancadaCrud = Crud.build(CargoBancada, '')
 def reordernar_materias_expediente(request, pk):
     expedientes = ExpedienteMateria.objects.filter(
                     sessao_plenaria_id=pk)
-    exp_num = 1
-    for e in expedientes:
+
+    for exp_num, e in enumerate(expedientes,1):
         e.numero_ordem = exp_num
         e.save()
-        exp_num += 1
 
     return HttpResponseRedirect(
         reverse('sessao:expedientemateria_list', kwargs={'pk': pk}))

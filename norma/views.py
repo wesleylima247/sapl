@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views.generic import FormView, ListView
 
@@ -46,7 +46,7 @@ class NormaCrud(Crud):
         list_field_names = ['tipo', 'numero', 'ano', 'ementa']
 
 
-class NormaPesquisaView(FormView):
+class NormaPesquisaView(LoginRequiredMixin, FormView):
     template_name = "norma/pesquisa.html"
     success_url = "norma:norma_pesquisa"
     form_class = NormaJuridicaPesquisaForm

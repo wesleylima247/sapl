@@ -1,11 +1,12 @@
 from django.utils.decorators import classonlymethod
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .base import (CREATE, LIST, Crud, CrudBaseMixin, CrudCreateView,
                    CrudDeleteView, CrudDetailView, CrudListView,
                    CrudUpdateView)
 
 
-class MasterDetailCrud(Crud):
+class MasterDetailCrud(LoginRequiredMixin, Crud):
 
     class BaseMixin(CrudBaseMixin):
 
