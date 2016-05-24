@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from model_mommy import mommy
@@ -7,8 +8,17 @@ from protocoloadm.forms import AnularProcoloAdmForm
 from protocoloadm.models import Protocolo
 
 
+def create_user():
+    username = 'test-user'
+    password = 'secret'
+    user = User.objects.create_user(username=username, password=password)
+
 @pytest.mark.django_db(transaction=False)
 def test_anular_protocolo_acessivel(client):
+
+    create_user()
+    client.login(username='test-user', password='secret')
+
     response = client.get(reverse('protocoloadm:anular_protocolo'))
     assert response.status_code == 200
 
@@ -16,6 +26,9 @@ def test_anular_protocolo_acessivel(client):
 @pytest.mark.django_db(transaction=False)
 def test_anular_protocolo_submit(client):
     mommy.make(Protocolo, numero='76', ano='2016', anulado=False)
+
+    create_user()
+    client.login(username='test-user', password='secret')
 
     # TODO: setar usuario e IP
     response = client.post(reverse('protocoloadm:anular_protocolo'),
