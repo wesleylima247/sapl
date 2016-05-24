@@ -74,6 +74,7 @@ class ProposicaoCrud(Crud):
 
     class CreateView(crud.base.CrudCreateView):
         form_class = ProposicaoForm
+        group_required = [u'Operador Geral', u'Autor']
 
         @property
         def layout_key(self):
@@ -81,6 +82,7 @@ class ProposicaoCrud(Crud):
 
     class UpdateView(crud.base.CrudUpdateView):
         form_class = ProposicaoForm
+        group_required = [u'Operador Geral', u'Autor']
 
         @property
         def layout_key(self):
