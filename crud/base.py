@@ -103,9 +103,7 @@ class CrudBaseMixin(CrispyLayoutFormMixin):
         return self.model._meta.verbose_name_plural
 
 
-class CrudListView(GroupRequiredMixin, ListView):
-
-    group_required = u'Operador Geral'
+class CrudListView(ListView):
 
     @classmethod
     def get_url_regex(cls):
