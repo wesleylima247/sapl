@@ -1,6 +1,6 @@
 from braces.views import FormMessagesMixin
 from django.conf.urls import url
-from django.contrib.auth.mixins import LoginRequiredMixin
+from braces.views import GroupRequiredMixin
 from django.core.urlresolvers import reverse
 from django.utils.decorators import classonlymethod
 from django.utils.translation import ugettext_lazy as _
@@ -103,7 +103,9 @@ class CrudBaseMixin(CrispyLayoutFormMixin):
         return self.model._meta.verbose_name_plural
 
 
-class CrudListView(LoginRequiredMixin, ListView):
+class CrudListView(GroupRequiredMixin, ListView):
+
+    group_required = u'Operador Geral'
 
     @classmethod
     def get_url_regex(cls):
@@ -146,7 +148,9 @@ class CrudListView(LoginRequiredMixin, ListView):
         return context
 
 
-class CrudCreateView(LoginRequiredMixin, FormMessagesMixin, CreateView):
+class CrudCreateView(GroupRequiredMixin, FormMessagesMixin, CreateView):
+
+    group_required = u'Operador Geral'
 
     @classmethod
     def get_url_regex(cls):
@@ -167,14 +171,16 @@ class CrudCreateView(LoginRequiredMixin, FormMessagesMixin, CreateView):
         return super(CrudCreateView, self).get_context_data(**kwargs)
 
 
-class CrudDetailView(LoginRequiredMixin, DetailView):
+class CrudDetailView(DetailView):
 
     @classmethod
     def get_url_regex(cls):
         return r'^(?P<pk>\d+)$'
 
 
-class CrudUpdateView(LoginRequiredMixin, FormMessagesMixin, UpdateView):
+class CrudUpdateView(GroupRequiredMixin, FormMessagesMixin, UpdateView):
+
+    group_required = u'Operador Geral'
 
     @classmethod
     def get_url_regex(cls):
@@ -190,7 +196,9 @@ class CrudUpdateView(LoginRequiredMixin, FormMessagesMixin, UpdateView):
         return self.detail_url
 
 
-class CrudDeleteView(LoginRequiredMixin, FormMessagesMixin, DeleteView):
+class CrudDeleteView(GroupRequiredMixin, FormMessagesMixin, DeleteView):
+
+    group_required = u'Operador Geral'
 
     @classmethod
     def get_url_regex(cls):

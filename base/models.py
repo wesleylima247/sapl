@@ -47,6 +47,7 @@ class CasaLegislativa(models.Model):
     class Meta:
         verbose_name = _('Casa Legislativa')
         verbose_name_plural = _('Casas Legislativas')
+        permissions = (('add_casalegislativa', 'Pode adicionar casa'))
 
 
 class ProblemaMigracao(models.Model):
