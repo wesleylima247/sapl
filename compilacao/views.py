@@ -1915,7 +1915,7 @@ class ActionsEditMixin:
 
         return data
 
-    def move_dpt_alterado(self, context):
+    def drag_move_dpt_alterado(self, context):
 
         bloco = Dispositivo.objects.get(pk=context['bloco_pk'])
         dpt = Dispositivo.objects.get(pk=context['dispositivo_id'])
@@ -1977,7 +1977,7 @@ class ActionsEditView(ActionsEditMixin, TemplateView):
             del self.request.session['herancas']
             del self.request.session['herancas_fila']
 
-        if context['action'] == 'move_dpt_alterado':
+        if context['action'] == 'drag_move_dpt_alterado':
             context['index'] = self.request.GET['index']
             context['bloco_pk'] = self.request.GET['bloco_pk']
 
@@ -2345,7 +2345,7 @@ class DispositivoEdicaoAlteracaoView(FormMessagesMixin, UpdateView):
             try:
                 with transaction.atomic():
                     return self.form_valid(form)
-            except:
+            except Exception as e:
                 return self.form_invalid(form)
         else:
             return self.form_invalid(form)
@@ -2535,6 +2535,18 @@ class TextNotificacoesView(ListView, CompMixin, FormView):
                  r.dispositivo_substituido.ta != r.ta,
                  _('Dispositivo está substituindo um Dispositivo de outro '
                    'Texto Articulado.'))
+
+            padd(r, type_notificacao, 'compilacao:dispositivo_edit_alteracao',
+                 r.dispositivo_substituido and
+                 r.dispositivo_substituido.dispositivo_subsequente != r,
+                 _('Dispositivo está substituindo um Dispositivo que não '
+                   'possui este como seu Dispositivo Subsequente.'))
+
+            padd(r, type_notificacao, 'compilacao:dispositivo_edit_alteracao',
+                 r.dispositivo_subsequente and
+                 r.dispositivo_subsequente.dispositivo_substituido != r,
+                 _('Dispositivo foi substituído por outro que não '
+                   'possui este como seu Dispositivo Substituído.'))
 
         rr = []
         for r in result:

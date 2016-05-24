@@ -84,7 +84,6 @@ a:link:after, a:visited:after {
         }
       }
     }
-    // This bridges the gap between the top bar and a dropdown.
     &::after {
       content: "";
       position: absolute;
@@ -93,20 +92,16 @@ a:link:after, a:visited:after {
       top: rem-calc(-25px);
       height: rem-calc(25px);
       width: 100%;
-      // This transition is for hover-on.
       transition: all 0.3s cubic-bezier(0.55,0,0.1,1);
     }
   }
   &:hover > ul {
-
     transform: translateY(7px);
-    // This transition is actually for when we hover-out of the dropdown.
     transition: transform 0.4s linear,
     opacity 0.4s linear,
     clip 0s 0.2s;
     opacity: 1;
     clip: rect(-100px, 2000px, 2000px, -100px);
-
   }
 
 }
@@ -530,14 +525,19 @@ a:link:after, a:visited:after {
       position: absolute;
       opacity: 0;
       transition: all 0.4s ease-in-out;
-      z-index: 2000;
+      z-index: 1000;
       a {
-        &.btn-edit {
+        &.btn-bloco {
           background-color: #3498db;
           color: #ffffff !important;
           padding: 8px 18px 6px;
           display: inline-block;
           line-height: 1;
+          float: right;
+          &:hover{
+            opacity: 1;
+            @include background-top-down(#1c81c4, #0b6dad);
+          }
         }
       }
     }
@@ -576,7 +576,7 @@ a:link:after, a:visited:after {
         width: 100% !important;
         box-shadow: 0 -1px 0 #e5e5e5, 0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.24);
         padding: 0.3em 1em;
-        margin: 1px 0;
+        margin: 0;
         background-color: #edf0f1;
         z-index: 1;
         &:not(:first-child) {
@@ -626,12 +626,17 @@ a:link:after, a:visited:after {
     .bloco_alteracao {
       margin: 0;
       padding: 1em;
+      border: 0 transparent;
       @include background-top-down(#eaeaee, #ddd);
-      &:not(:first-child) {
-        border-top: 0px solid white;
+
+      &:hover {
+        border-color: transparent;
       }
       .dpt {
         background-color: white;
+        &:not(:first-child) {
+          border-top: 0px solid white;
+        }
       }
     }
 
@@ -643,7 +648,9 @@ a:link:after, a:visited:after {
     }
 
     & > .actions_right {
-      display: none;
+      opacity: 1;
+      margin: 1em 3.2em 0 0;
+
     }
 
     .csform {  /* compilacao simple form */

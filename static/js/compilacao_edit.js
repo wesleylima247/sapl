@@ -270,7 +270,7 @@ function reloadFunctionClicks() {
           var pk = ui.item.attr('pk');
           var bloco_pk = ui.item.closest('.bloco').closest('.dpt').attr('pk');
 
-          url = pk+'/actions?action=move_dpt_alterado&index='+ui.item.index()+'&bloco_pk='+bloco_pk;
+          url = pk+'/actions?action=drag_move_dpt_alterado&index='+ui.item.index()+'&bloco_pk='+bloco_pk;
           $.get(url).done(function( data ) {
               console.log(pk+ ' - '+ bloco_pk);
           });

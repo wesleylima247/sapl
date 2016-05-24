@@ -623,7 +623,7 @@ class DispositivoSearchModalForm(Form):
                         placeholder=_('Digite palavras, letras, '
                                       'números ou algo'
                                       ' que estejam no texto.')),
-                    StrictButton(_('Buscar'), css_class='btn-busca')), 7))
+                    StrictButton(_('Buscar'), css_class='btn-busca btn-primary')), 7))
                 )
         )
 
@@ -1081,7 +1081,7 @@ class TextNotificacoesForm(Form):
 
     type_notificacoes = forms.ChoiceField(
         label=_('Níveis de Notificações'),
-        choices=[('default', _('Mostrar Dispositivos sem Notificações!')),
+        choices=[('default', _('Dispositivos sem Notificações!')),
                  ('success', _('Informações!')),
                  ('info', _('Boas Práticas!')),
                  ('warning', _('Alertas!')),
